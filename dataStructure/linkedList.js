@@ -81,7 +81,7 @@ class SingleList {
     while (node.next) {
       node = node.next
     }
-    return node.next
+    return node
   }
 
   // 判断单链表是否为空
@@ -121,6 +121,7 @@ class SingleList {
       nodeList.push(node)
       node = node.next
     }
+    return nodeList
   }
 
   // 清空单链表
@@ -215,7 +216,7 @@ class DoubleList {
     while (node.next) {
       node = node.next
     }
-    return node.next
+    return node
   }
 
   // 判断单链表是否为空
@@ -255,6 +256,7 @@ class DoubleList {
       nodeList.push(node)
       node = node.next
     }
+    return nodeList
   }
 
   // 清空单链表
