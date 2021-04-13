@@ -9,31 +9,31 @@ class Node {
 class Stack {
   constructor(arr = []) {
     this.head = null
-    this.last = null
     this.size = 0
     if (arr.length) {
-      this.head = this.last = new Node(arr[0])
+      this.head = new Node(arr[0])
       let newNode = null
-      let head = this.head
       this.size++
       for(let i = 1; i < arr.length; i++) {
         newNode = new Node(arr[i])
-        head.next = newNode
-        this.last = head = newNode
+        newNode.next = this.head
+        this.head = newNode
         this.size++
       }
     }
   }
 
-  push(value) {
-    const newNode = new Node(value)
+  push(node) {
+    if (!node) {
+      return
+    }
     if (this.size === 0) {
-      this.head = this.last = newNode
+      this.head = node
       this.size = 1
       return
     }
-    this.last.next = newNode
-    this.last = newNode
+    node.next = this.head
+    this.head = node
     this.size++
   }
 
@@ -45,24 +45,62 @@ class Stack {
     return head
   }
 
+  peek() {
+    return this.head
+  }
+
   isEmpty() {
     return this.size === 0
   }
 }
 
-// 先序
+// 先序 头 => 左 => 右
 function pre(head) {
-
+  const stack = new Stack()
+  stack.push(head)
+  let node = null
+  while(!stack.isEmpty()) {
+     node = stack.pop()
+    console.log(node.value)
+    stack.push(node.right)
+    stack.push(node.left)
+  }
 }
 
-// 中序
+// 中序 左 => 头 => 右 
 function mid(head) {
-
+  const stack = new Stack()
+  stack.push(head)
+  let node = head
+  while(!stack.isEmpty()) {
+    while (node && node.left) {
+      stack.push(node.left)
+      node = node.left
+    }
+    node = stack.pop()
+    console.log(node.value)
+    node = node.right
+    stack.push(node)
+  }
 }
 
-// 后序
+// 后序  头 右 左 的逆序  左 右 头
 function after(head) {
-
+  const stack = new Stack()
+  stack.push(head)
+  let node = head
+  let newStack = new Stack()
+  while(!stack.isEmpty()) {
+    node = stack.pop()
+    newStack.push(node)
+    stack.push(node.left)
+    stack.push(node.right)
+  }
+  console.log(newStack)
+  while(!newStack.isEmpty()) {
+    node = newStack.pop()
+    console.log(node.value)
+  }
 }
 
 function generatorTree(arr) {
@@ -88,8 +126,9 @@ function generatorTree(arr) {
 }
 
 const head = generatorTree([1, 2, 3, 4, 5, 6, 7])
-pre(head)
-console.log('************')
+// pre(head)
+// console.log('************')
 mid(head)
 console.log('************')
-after(head)
+// after(head)
+
