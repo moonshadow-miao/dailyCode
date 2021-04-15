@@ -67,7 +67,7 @@ function pre(head) {
   }
 }
 
-// 中序 左 => 头 => 右 
+// 中序 左 => 头 => 右
 function mid(head) {
   const stack = new Stack()
   stack.push(head)
@@ -81,6 +81,26 @@ function mid(head) {
     console.log(node.value)
     node = node.right
     stack.push(node)
+  }
+}
+
+// 后序 左 右 头
+function after2 (head) {
+  debugger
+  let stack = new Stack()
+  stack.push(head)
+  let cur = null
+  let newHead = head
+  while (!stack.isEmpty()) {
+    cur = stack.peek()
+    if (cur.left && newHead !== cur.left && newHead !== cur.right) {
+      stack.push(cur.left)
+    } else if(cur.right && newHead !== cur.right) {
+      stack.push(cur.right)
+    } else {
+      console.log(stack.pop().value)
+      newHead = cur
+    }
   }
 }
 
@@ -128,7 +148,7 @@ function generatorTree(arr) {
 const head = generatorTree([1, 2, 3, 4, 5, 6, 7])
 // pre(head)
 // console.log('************')
-mid(head)
+after2(head)
 console.log('************')
 // after(head)
 

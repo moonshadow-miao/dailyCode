@@ -9,31 +9,31 @@ class Node {
 class Stack {
   constructor(arr = []) {
     this.head = null
-    this.last = null
     this.size = 0
     if (arr.length) {
-      this.head = this.last = new Node(arr[0])
+      this.head = new Node(arr[0])
       let newNode = null
-      let head = this.head
       this.size++
       for(let i = 1; i < arr.length; i++) {
         newNode = new Node(arr[i])
-        head.next = newNode
-        this.last = head = newNode
+        newNode.next = this.head
+        this.head = newNode
         this.size++
       }
     }
   }
 
-  push(value) {
-    const newNode = new Node(value)
+  push(node) {
+    if (!node) {
+      return
+    }
     if (this.size === 0) {
-      this.head = this.last = newNode
+      this.head = node
       this.size = 1
       return
     }
-    this.last.next = newNode
-    this.last = newNode
+    node.next = this.head
+    this.head = node
     this.size++
   }
 
@@ -43,6 +43,10 @@ class Stack {
     head.next = null
     this.size--
     return head
+  }
+
+  peek() {
+    return this.head
   }
 
   isEmpty() {
