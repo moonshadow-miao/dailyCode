@@ -1,19 +1,19 @@
-// 是否是平衡二叉树  任意一个节点左子树高度和右子树高度之差的绝对值不超过1；
+// 是否是满二叉树  一棵深度为k且有 2^k -1 个结点的二叉树称为完全二叉树
 
-function isBalanceTree(head) {
-  return process(head)
+function isFullTree(head) {
+  const {height, nodes} = process(head)
+  console.log(height, nodes)
+  return Math.pow(2, height) - 1 === nodes
 }
 
 function process(head) {
   if (!head) {
-    return {isBst: true, height: 0}
+    return {height: 0, nodes: 0}
   }
   const leftHeight = process(head.left)
   const rightHeight = process(head.right)
-  if(!(leftHeight.isBst && rightHeight.isBst && Math.abs(leftHeight.height - rightHeight.height) <= 1)) {
-    debugger
-  }
-  return {isBst: leftHeight.isBst && rightHeight.isBst && Math.abs(leftHeight.height - rightHeight.height) <= 1, height: Math.max(leftHeight.height, rightHeight.height) + 1 }
+  const height = Math.max(leftHeight.height, rightHeight.height) + 1
+  return {height, nodes: leftHeight.nodes + rightHeight.nodes + 1}
 }
 
 class Node {
@@ -39,6 +39,6 @@ function generatorTree(arr) {
   return head
 }
 
-const head = generatorTree([5, 3, 7, 2, 4, 6, 8, 1, 11])
+const head = generatorTree([5, 3, 7, 2, 4, 6, 8, 1, 2, 3, 4, 5, 6, 7, 8])
 
-console.log(isBalanceTree(head))
+console.log(isFullTree(head))

@@ -111,7 +111,7 @@
     }
   }
 
-  const head = generatorTree([1, 2, 3, 4, 5, 6, 7, 8, null, 10, null, null, null, null, 15])
+  const head = generatorTree([5, 3, 7, 2, null, 6, 8, 1, 11])
 
   printBinary(head)
 
