@@ -4,14 +4,25 @@
 
 function convertToLetterString(str) {
   const res = []
-  console.log(process())
+  console.log(process(str.split(''), res, 0, ''))
+  console.log(res)
 }
 
-function process (strList, res, index) {
+function process (strList, resList, index, res) {
   if (index === strList.length ) {
-    res.push()
+    resList.push(res)
+    return 1
+  }
+  if (strList[index] === '0') {
     return 0
   }
+  let times = 0
+  times += process(strList, resList, index + 1, res + String.fromCharCode(+strList[index] + 64))
+  if (+strList[index]  === 2 && +strList[index + 1] < 7 || +strList[index] === 1) {
+    res += String.fromCharCode(+(strList[index] + strList[index + 1]) + 64)
+    times += process(strList, resList, index + 2, res)
+  }
+  return times
 }
 
-convertToLetterString('12224')
+convertToLetterString('1224')
