@@ -1,17 +1,35 @@
-// 打印一个字符串的全部子序列，包括空字符串
+// 答应一个字符串的全部子序列，包括空字符串
+// function printAllSubString(str) {
+//   const res = []
+//   process(str.split(''), res, 0, '')
+//   console.log(res)
+// }
+//
+// function process(strList, res, index, selectStr) {
+//   if (index === strList.length) {
+//     res.push(selectStr)
+//     return
+//   }
+//   process(strList, res, index + 1, selectStr)
+//   process(strList, res, index + 1, selectStr + strList[index])
+// }
+
 function printAllSubString(str) {
-  let res = []
-  process(str)
+  const res = []
+  process(str.split(''), res, 0)
   console.log(res)
 }
 
-function process (str, res) {
-  if (str) {
-    res.push(str)
+function process(strList, res, index) {
+  if (index === strList.length) {
+    res.push(strList.join(''))
     return
   }
-
-  process()
+  const temp = strList[index]
+  strList[index] = ''
+  process(strList, res, index + 1)
+  strList[index] = temp
+  process(strList, res, index + 1)
 }
 
 printAllSubString('abc')
