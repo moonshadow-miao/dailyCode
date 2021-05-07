@@ -7,5 +7,29 @@
 <body>
 <script src="promise.js"></script>
 
+<style>
+    .out {
+        width: 300px;
+        background-color: #fff;
+        border: 1px solid blue;
+    }
+    .inner {
+        position: sticky;
+        width: 100px;
+        height: 100px;
+        border: 1px solid gold;
+        left: 0;
+        top: 10px;
+    }
+    .scroll {
+        height: 1500px;
+        width: 200px;
+    }
+</style>
+<div class="out">
+    <div class="scroll"></div>
+    <div class="inner"></div>
+    <div class="scroll"></div>
+</div>
 </body>
 </html>

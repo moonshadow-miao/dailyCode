@@ -8,7 +8,7 @@ function isSearchTree(head) {
 
 function process(head) {
   if (!head) {
-    return null
+    return true
   }
   const leftRes = process(head.left)
   const rightRes = process(head.right)
@@ -35,7 +35,7 @@ function process(head) {
     isSearch = true
   }
 
-  return {isSearch, max, min}
+  return {isSearch}
 }
 
 
