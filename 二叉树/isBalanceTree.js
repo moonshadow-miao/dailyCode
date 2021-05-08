@@ -10,6 +10,9 @@ function process(head) {
   }
   const leftHeight = process(head.left)
   const rightHeight = process(head.right)
+  if(!(leftHeight.isBst && rightHeight.isBst && Math.abs(leftHeight.height - rightHeight.height) <= 1)) {
+    debugger
+  }
   return {isBst: leftHeight.isBst && rightHeight.isBst && Math.abs(leftHeight.height - rightHeight.height) <= 1, height: Math.max(leftHeight.height, rightHeight.height) + 1 }
 }
 
