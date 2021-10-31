@@ -1,10 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8">
+  <title>Title</title>
 </head>
-<script src="./intersect.js"></script>
+<!--<script src="./intersect.js"></script>-->
+<script>
+    class Node {
+        constructor(data) {
+            this.val = data;  // 节点的数据域
+            this.prev = null;  // 节点的指针域
+            this.next = null;  // 节点的指针域
+        }
+    }
+
+    class SingleList {
+        constructor(head) {
+            this.size = 1;  // 单链表的长度
+            this.head = new Node(head);  // 表头节点
+            this.curNode = this.head;  // 当前节点的指向
+        }
+
+        // 在单链表的尾部添加元素
+        append(element) {
+            const last = this.findLast()
+            if (last) {
+                last.next = new Node(element)
+                this.size++
+            }
+        }
+
+        // 获取单链表的最后一个节点
+        findLast() {
+            if (this.size === 0) {
+                return null
+            }
+            let node = this.head
+            while (node.next) {
+                node = node.next
+            }
+            return node
+        }
+    }
+
+    const arr1 = [5]
+    const arr2 = [1, 2, 4]
+    const head1 = new SingleList(arr1[0])
+    const head2 = new SingleList(arr2[0])
+    for (let i = 1; i < arr1.length; i++) {
+        head1.append(arr1[i])
+    }
+    for (let j = 1; j < arr2.length; j++) {
+        head2.append(arr2[j])
+    }
+
+
+    function process(n) {
+        if (n === 1) {
+            return '1'
+        }
+        let str = process(n - 1)
+        return say(str)
+    }
+
+    function say(str) {
+        let index = 1
+        let count = 1
+        let countStr =  str[0]
+        let newStr = ''
+        while(index < str.length) {
+            if (countStr === str[index]) {
+                count++
+            } else {
+                newStr += `${count}${countStr}`
+                count = 1
+                countStr = str[index]
+            }
+            index++
+        }
+        newStr += `${count}${countStr}`
+        return newStr
+    }
+
+    // var countAndSay = function(n) {
+    //     if (n < 1) {
+    //         return ''
+    //     }
+    //     return process(n)
+    // };
+    // console.log(countAndSay(5));
+
+
+    var maxSubArray = function(nums) {
+        let left = 0
+        let right = 0
+        let maxSum = 0
+        let sum = 0
+        while(right < nums.length) {
+            sum += nums[right]
+            maxSum = Math.max(maxSum, sum)
+            right++
+        }
+        while(left < nums.length) {
+            sum -= nums[left]
+            maxSum = Math.max(maxSum, sum)
+            left++
+        }
+        return maxSum
+    };
+    console.log(maxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4]));
+</script>
 <body>
 
 </body>

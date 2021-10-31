@@ -1,58 +1,52 @@
 class PriorityQueue {
-  constructor(comparator) {
-    if (comparator && typeof comparator !== 'function') {
-      throw Error
-    }
+  constructor(list, compare = (a, b) => a - b) {
     this.heap = []
-    const defaultComparator = (a, b) => (a - b)
-    this.comparator = comparator || defaultComparator
-    this.size = this.heap.length
+    this.compare = compare
+    list.forEach(this.add.bind(this))
   }
 
-   _heapFy() {
-    const size = this.heap.length
-     if (size < 2) {
-       return
-     }
-     let parentIndex = 0
-     let left = parentIndex * 2 + 1
-     let right = parentIndex * 2 + 2
-     let min = right < size ? this.comparator(this.heap[left], this.heap[right]) < 0 ? left : right : left
-     while (left < size && this.comparator(this.heap[parentIndex], this.heap[min]) > 0) {
-       this.swap(parentIndex, min)
-       parentIndex = min
-       left = parentIndex * 2 + 1
-       right = parentIndex * 2 + 2
-       min = right < size ? this.comparator(this.heap[left], this.heap[right]) < 0 ? left : right : left
-     }
-  }
-
-  poll() {
-    if (this.heap.length) {
-      const value = this.heap.shift()
-      this.size = this.heap.length
-      this._heapFy()
-      return value
+  add(val) {
+    // 从下往上调整
+    this.heap.push(val)
+    let childIndex = this.heap.length - 1
+    let parentIndex = Math.floor((childIndex - 1) / 2)
+    while (parentIndex >= 0) {
+      if (this.compare(this.heap[parentIndex], this.heap[childIndex]) > 0) {
+        this.swap(parentIndex, childIndex)
+      }
+      childIndex = parentIndex
+      parentIndex = Math.floor((childIndex - 1) / 2)
     }
-    return null
   }
 
-  offer(item) {
-    this.heap.unshift(item)
-    this.size = this.heap.length
-    this._heapFy()
+  offer() {
+    if (!this.heap.length) {
+      return
+    }
+    this.swap(0, this.heap.length - 1)
+    let val = this.heap.pop()
+    this.heapFy()
+    return val
+  }
+
+  heapFy(index = 0) {
+    // 从上往下调整
+    let parentIndex = index
+    let childIndex = this.compare(this.heap[parentIndex * 2 + 1], this.heap[ parentIndex * 2 +  2]) < 0 ? parentIndex * 2 + 1 : parentIndex * 2 + 2
+    while (parentIndex < this.heap.length) {
+      if (this.compare(this.heap[parentIndex], this.heap[childIndex]) > 0) {
+        this.swap(parentIndex, childIndex)
+      }
+      parentIndex = childIndex
+      childIndex = this.compare(this.heap[parentIndex * 2 + 1], this.heap[ parentIndex * 2 +  2]) < 0 ? parentIndex * 2 + 1 : parentIndex * 2 + 2
+    }
   }
 
   swap(index1, index2) {
     let temp = this.heap[index1]
     this.heap[index1] = this.heap[index2]
     this.heap[index2] = temp
-  }
-
-  peek() {
-    if (this.heap.length) {
-      return this.heap[0]
-    }
+    temp = null
   }
 }
 
