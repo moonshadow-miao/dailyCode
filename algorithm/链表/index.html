@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script src="./linkStack.js"></script>
+<script>
+  function reverseDoubleLink(head) {
+    let prev = null
+    let next = null
+    while (head) {
+      next = head.next
+      head.next = prev
+      head.prev = null
+      prev && (prev.prev = head)
+      prev = head
+      head = next
+    }
+    return prev
+  }
+  // const head = generateLinkedList([1, 2, 3, 4, 5, 6]).head
+  // console.log(reverseDoubleLink(head))
+
+  function reverseSingleLink(head) {
+    let prev = null
+    let next = null
+    while (head) {
+      next = head.next
+      head.next = prev
+      prev = head
+      head = next
+    }
+    return prev
+  }
+  // const head = generateLinkedList([1, 2, 3, 4, 5, 6]).head
+  // console.log(reverseSingleLink(head))
+
+ // 删除链表中指定的项
+  function removeSomeNode(head, nodeValue) {
+    let newHead = head
+    let prev = null
+    while (head) {
+      if (head.data === nodeValue) {
+        if (!prev) {
+          newHead = head.next
+          head.next = null
+          head = newHead
+        } else {
+          prev.next = head.next
+          head = head.next
+        }
+      } else {
+        prev = head
+        head = head.next
+      }
+    }
+    return newHead
+  }
+
+  // const head = generateLinkedList([1, 1, 2, 2, 3, 3, 4, 5, 6]).head
+  // const head2 = generateLinkedList([11, 22, 33, 44, 55, 22, 33, 44, 55]).head
+
+  class singleLinkQueue {
+    constructor() {
+      this.last = null
+      this.head = null
+    }
+
+    pop() {
+      if (!this.head) return null
+      const popNode = this.head
+      const next = this.head.next
+      if(!next) {this.last = null}
+      this.head = next
+      return popNode
+    }
+
+    push(value) {
+      const node = new Node(value)
+      if (!this.last) this.head = node
+      if (this.last) {
+        this.last.next = node
+      }
+      this.last = node
+      return node
+    }
+
+    view() {
+      const data = []
+      let cur = this.head
+      while (cur) {
+        data.push(cur.data)
+        cur = cur.next
+      }
+      return data
+    }
+  }
+
+  // O(1) 复杂度获取栈中最小的元素
+  class minStack {
+    stack = []
+    minStack = []
+    min = null
+    push(data) {
+      if (this.min === null) {
+        this.min = data
+      } else {
+        this.min = Math.min(data, this.min)
+      }
+      this.stack.push(data)
+      this.minStack.push(this.min)
+    }
+
+    pop() {
+      this.minStack.pop()
+      return this.stack.pop()
+    }
+
+    getMin() {
+      return this.minStack[this.minStack.length - 1]
+    }
+  }
+
+</script>
+<body>
+
+</body>
+</html>

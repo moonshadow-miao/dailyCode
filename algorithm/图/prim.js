@@ -25,7 +25,6 @@ function prim(graph) {
       }
     }
   }
-  console.log(result)
   return result
 }
 

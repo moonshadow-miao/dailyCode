@@ -6,8 +6,8 @@ class Node {
   }
 }
 
-// 双向链表
-class DoubleList {
+// 单向链表
+class SingleList {
   constructor(head) {
     this.size = 1;  // 单链表的长度
     this.head = new Node(head);  // 表头节点
@@ -32,9 +32,7 @@ class DoubleList {
     if (pre) {
       const next = pre.next
       pre.next = new Node(element)
-      pre.next.prev = pre
       pre.next.next = next
-      next.prev = pre.next
       this.size++
     }
   }
@@ -60,7 +58,6 @@ class DoubleList {
     if (pre) {
       let cur = pre.next
       pre.next = cur.next
-      cur.next.prev = pre
       cur = null
       this.size--
     }
@@ -71,7 +68,6 @@ class DoubleList {
     const last = this.findLast()
     if (last) {
       last.next = new Node(element)
-      last.next.prev = last
       this.size++
     }
   }
@@ -145,34 +141,45 @@ function generateLinkedList(arr) {
   if (!arr.length) {
     return
   }
-  const LinkedList = new DoubleList(arr[0])
+  const LinkedList = new SingleList(arr[0])
   for (let i = 1; i < arr.length; i++) {
     LinkedList.append(arr[i])
   }
   return LinkedList
 }
 
+// // 翻转链表
+// function reverse(linkedList) {
+//   let oldHead = linkedList.head
+//   let newHead = null
+//   let pre = null
+//   while (oldHead) {
+//     pre = newHead
+//     newHead = oldHead
+//     oldHead = oldHead.next
+//     newHead.next = pre
+//   }
+//   linkedList.head = newHead
+//   return linkedList
+// }
+
 // 翻转链表
-function reverseDouble(linkedList) {
-  if (linkedList.length <= 1) {
-    return linkedList
-  }
-  let cur = linkedList.head
+function reverseSingle(linkedList) {
+  let head = linkedList.head
   let pre = null
   let next = null
-  while (cur) {
-    pre = cur.prev
-    next = cur.next
-    cur.next = pre
-    cur.prev = next
-    cur = cur.prev
+  while (head) {
+    next = head.next
+    head.next = pre
+    pre = head
+    head = next
   }
-  linkedList.head = pre.prev
+  linkedList.head = pre
   return linkedList
 }
 
-const LinkedList = generateLinkedList([0, 1])
-console.log(LinkedList.display())
-reverseDouble(LinkedList)
-console.log(LinkedList.display())
+// const LinkedList = generateLinkedList([0,1, 2, 3])
+// console.log(LinkedList.display())
+// reverseSingle(LinkedList)
+// console.log(LinkedList.display())
 
