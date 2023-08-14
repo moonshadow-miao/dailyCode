@@ -4,9 +4,208 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
-<!--<script src="countSort.js"></script>-->
-<script src="countSort.js"></script>
-<body>
 
+<body>
+<script>
+  function mergeSort(arr) {
+    function process(arr, left, right) {
+      if (left === right) {
+        return [arr[left]]
+      }
+      const mid = (left + right) >> 1
+      const leftArr = process(arr, left, mid)
+      const rightArr = process(arr, mid + 1, right)
+      return merge(leftArr, rightArr)
+    }
+
+    function merge(leftArr, rightArr) {
+      const mergeArr = []
+      let leftIndex = 0
+      let rightIndex = 0
+      while (leftIndex < leftArr.length && rightIndex < rightArr.length) {
+        leftArr[leftIndex] < rightArr[rightIndex] ? mergeArr.push(leftArr[leftIndex++]) : mergeArr.push(rightArr[rightIndex++])
+      }
+      while (leftIndex < leftArr.length) {
+        mergeArr.push(leftArr[leftIndex++])
+      }
+      while (rightIndex < rightArr.length) {
+        mergeArr.push(rightArr[rightIndex++])
+      }
+      return mergeArr
+    }
+
+    return process(arr, 0, arr.length - 1)
+  }
+
+  // 小和问题 在一个数组中， 每一个数左边比当前数小的数累加起来， 叫做这个数组的小和。 求一个数组的小和。
+  function minSum(arr) {
+    function mergeArrSum(arr, left, mid, right) {
+      const sortArray = []
+      let sum = 0
+      let leftIndex = left
+      let rightIndex = mid + 1
+      while (leftIndex <= mid && rightIndex <= right) {
+        arr[leftIndex] < arr[rightIndex] && (sum += arr[leftIndex] * (right - rightIndex + 1))
+        sortArray.push(arr[leftIndex] < arr[rightIndex] ? arr[leftIndex++] : arr[rightIndex++])
+      }
+      while (leftIndex <= mid) {
+        sortArray.push(arr[leftIndex++])
+      }
+      while (rightIndex <= right) {
+        sortArray.push(arr[rightIndex++])
+      }
+      let index = left
+      while (index <= right) {
+        arr[index] = sortArray[index - left]
+        index++
+      }
+      return sum
+    }
+
+    function processGetSum(arr, left, right) {
+      if (left === right) {
+        return 0
+      }
+      const mid = (left + right) >> 1
+      const leftSum = processGetSum(arr, left, mid)
+      const rightSum = processGetSum(arr, mid + 1, right)
+      const mergeSum = mergeArrSum(arr, left, mid, right)
+      return leftSum + rightSum + mergeSum
+    }
+
+    return processGetSum(arr, 0, arr.length - 1)
+  }
+
+</script>
+<script>
+  // 快排
+  // 荷兰国旗问题
+  function swap(arr, index1, index2) {
+    if (index2 === index1) {
+      return
+    }
+    arr[index1] = arr[index1] ^ arr[index2]
+    arr[index2] = arr[index1] ^ arr[index2]
+    arr[index1] = arr[index1] ^ arr[index2]
+  }
+
+  function holland(arr, left, right) {
+    let flag = right // 用数组中最后一个数字将数组分割成 < flag  ==flag  >flag
+    let index = left--
+    while (index < right) {
+      if (arr[index] < arr[flag]) {
+        swap(arr, index++, ++left)
+      } else if (arr[index] > arr[flag]) {
+        swap(arr, index, --right)
+      } else {
+        index++
+      }
+    }
+    swap(arr, right, flag)
+    return [left, right + 1]
+  }
+
+  function quickSort(arr) {
+    function process(arr, left, right) {
+      if (left >= right) {
+        return
+      }
+      const random = Math.floor(Math.random() * (right - left) + left)
+      swap(arr, right, random)
+      const [smaller, bigger] = holland(arr, left, right)
+      process(arr, left, smaller)
+      process(arr, bigger, right)
+    }
+
+    process(arr, 0, arr.length - 1)
+  }
+
+
+</script>
+<script>
+  class priorityQueue {
+    constructor(arr, compare) {
+      this.heap = []
+      this.size = 0
+      for (let i = 0; i < arr.length; i++) {
+        this.add(arr[i])
+      }
+    }
+
+    _swap(index1, index2) {
+      const arr = this.heap
+      if (index1 === index2) {
+        return
+      }
+      arr[index1] = arr[index1] ^ arr[index2]
+      arr[index2] = arr[index1] ^ arr[index2]
+      arr[index1] = arr[index1] ^ arr[index2]
+    }
+
+    heapInsert(index) {
+      if (index > this.size - 1) {
+        return
+      }
+      while (index) {
+        let parent = (index - 1) >> 1
+        if (this.heap[index] < this.heap[parent]) {
+          this._swap(index, parent)
+          index = parent
+        } else {
+          break
+        }
+      }
+    }
+
+    heapify(index) {
+      if (index > this.size - 1) {
+        return
+      }
+      const arr = this.heap
+      let leftChild = index *  2 + 1
+      while (leftChild < this.size) {
+        let rightChild = leftChild + 1
+        rightChild = rightChild > this.size - 1 ? this.size - 1 : rightChild
+        let min = arr[leftChild] < arr[rightChild] ? leftChild : rightChild
+        if (arr[index] > arr[min]) {
+          this._swap(min, index)
+          index = min
+          leftChild = index *  2 + 1
+        } else {
+          break
+        }
+      }
+    }
+
+    peek() {
+      return this.heap[this.size - 1]
+    }
+
+    add(value) {
+      this.heap.push(value)
+      this.size++
+      this.heapInsert(this.size - 1)
+    }
+
+    poll() {
+      const top = this.heap[0]
+      this._swap(0, this.size -1)
+      this.size--
+      this.heap.pop()
+      this.heapify(0)
+      return top
+    }
+  }
+
+  function heapSort(arr) {
+    const heap = new priorityQueue(arr)
+    let index = 0
+    while (heap.size) {
+      const top = heap.poll()
+      arr[index++] = top
+    }
+  }
+</script>
 </body>
 </html>
+<script src="heapSort.js"></script>

@@ -13,7 +13,6 @@ function heapSort(arr) {
     swap(arr, 0, i)
     heapify(arr, 0, i)
   }
-  console.log(arr)
 }
 
 // 某个位置，由上向下调整，使之堆化 大顶堆
@@ -56,4 +55,16 @@ function generator () {
   return Array(length).fill('').map(() => Math.floor(Math.random() * 40))
 }
 
-heapSort(generator())
+// 在一个相对有序（数组每项在调整成有序数组过程移动的次数不超过K次）数组，排序这个数组
+function sortArray(arr, k) {
+  const heap = new priorityQueue(arr.slice(0, k))
+  let index = 0
+  while (index < arr.length) {
+    arr[index] = heap.poll();
+    (index + k < arr.length) && heap.add(arr[index + k]);
+    index++
+  }
+}
+const arr = [1, 4, 6, 2, 3, 5, 7, 6, 5, 8]
+sortArray(arr, 6)
+console.log(arr)

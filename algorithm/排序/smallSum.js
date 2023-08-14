@@ -18,6 +18,7 @@ function merge(arr, left, right, mid) {
   let newArr = []
   let sum = 0
   while (leftIndex <= mid && rightIndex <= right) {
+    // todo important: 相等的时候，需要先拷贝右边分组，保证计算右边分组有多少个数比当前leftIndex大
     if (arr[leftIndex] < arr[rightIndex]) {
       sum += arr[leftIndex] * (right - rightIndex + 1) // 小和只在左右子树比较时产生
       newArr.push(arr[leftIndex])

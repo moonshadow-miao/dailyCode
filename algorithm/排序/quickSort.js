@@ -51,6 +51,23 @@ function generator () {
   return Array(length).fill('').map(() => Math.ceil(Math.random() * 10))
 }
 
-console.log(quickSort(generator()))
 
 // partition([6,3], 0 , 1, 3)
+
+// 快排的非递归版本
+function quickSortByStack(arr) {
+  const stack = []
+  stack.push([0, arr.length - 1])
+  while (stack.length) {
+    let [left, right] = stack.pop()
+    let [smaller, bigger] = partition(arr, left, right);
+    (left < smaller - 1 ) && stack.push([left, smaller - 1]);
+    (bigger + 1 < right) && stack.push([bigger + 1, right]);
+  }
+}
+
+// const arr = generator()
+// console.log(arr)
+// quickSortByStack(arr)
+// console.log(arr)
+// console.log(arr.toString() === arr.sort((a, b) => a -b).toString())
