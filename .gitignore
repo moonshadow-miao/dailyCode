@@ -11,3 +11,4 @@ package-lock.json
 yarn.lock
 !src/taro-ui/dist
 .vscode/launch.json
+/dataStructure/*.js

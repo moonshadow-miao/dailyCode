@@ -32,8 +32,8 @@ console.log(data);
 const name = "Lydia";
 age = 21;
 
-console.log(delete name);
-console.log(delete age);
+// console.log(delete name);
+// console.log(delete age);
 
 // 1. 如果你试图删除的属性不存在，那么delete将不会起任何作用，但仍会返回true
 

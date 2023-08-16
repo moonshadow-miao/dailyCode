@@ -124,7 +124,7 @@
 </script>
 <script>
   class priorityQueue {
-    constructor(arr, compare) {
+    constructor(arr = []) {
       this.heap = []
       this.size = 0
       for (let i = 0; i < arr.length; i++) {
@@ -178,7 +178,7 @@
     }
 
     peek() {
-      return this.heap[this.size - 1]
+      return this.heap[0]
     }
 
     add(value) {
@@ -194,15 +194,6 @@
       this.heap.pop()
       this.heapify(0)
       return top
-    }
-  }
-
-  function heapSort(arr) {
-    const heap = new priorityQueue(arr)
-    let index = 0
-    while (heap.size) {
-      const top = heap.poll()
-      arr[index++] = top
     }
   }
 </script>

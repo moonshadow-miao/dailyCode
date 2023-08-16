@@ -13,6 +13,7 @@
     "webpack-dev-server": "^3.11.2"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.22.5",
     "webpack-cli": "^4.7.0"
   },
   "browserslist": [
