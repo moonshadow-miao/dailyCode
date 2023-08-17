@@ -1,5 +1,9 @@
-class Node {
-  constructor(data) {
+// @ts-ignore
+class LinkNode {
+  data: number
+  prev: LinkNode | null
+  next: LinkNode | null
+  constructor(data: number) {
     this.data = data;  // 节点的数据域
     this.prev = null;  // 节点的指针域
     this.next = null;  // 节点的指针域
@@ -8,14 +12,17 @@ class Node {
 
 // 单向链表
 class SingleList {
-  constructor(head) {
+  private size: number;
+  private head: LinkNode;
+  private curNode: LinkNode;
+  constructor(head: number) {
     this.size = 1;  // 单链表的长度
-    this.head = new Node(head);  // 表头节点
+    this.head = new LinkNode(head);  // 表头节点
     this.curNode = this.head;  // 当前节点的指向
   }
 
   // 在单链表中寻找item元素
-  find(item) {
+  find(item: number) {
     let node = this.head
     while (node) {
       if (node.data === item) {
@@ -27,11 +34,11 @@ class SingleList {
   }
 
   // 向单链表中插入元素
-  insert(item, element) {
+  insert(item: number, element: number) {
     const pre = this.find(item)
     if (pre) {
       const next = pre.next
-      pre.next = new Node(element)
+      pre.next = new LinkNode(element)
       pre.next.next = next
       this.size++
     }
@@ -67,7 +74,7 @@ class SingleList {
   append(element) {
     const last = this.findLast()
     if (last) {
-      last.next = new Node(element)
+      last.next = new LinkNode(element)
       this.size++
     }
   }
@@ -139,9 +146,12 @@ class SingleList {
 
 // 双向链表
 class DoubleList {
+  private size: number;
+  private head: LinkNode;
+  private curNode: LinkNode;
   constructor(head) {
     this.size = 1;  // 单链表的长度
-    this.head = new Node(head);  // 表头节点
+    this.head = new LinkNode(head);  // 表头节点
     this.curNode = this.head;  // 当前节点的指向
   }
 
@@ -162,7 +172,7 @@ class DoubleList {
     const pre = this.find(item)
     if (pre) {
       const next = pre.next
-      pre.next = new Node(element)
+      pre.next = new LinkNode(element)
       pre.next.prev = pre
       pre.next.next = next
       next.prev = pre.next
@@ -201,7 +211,7 @@ class DoubleList {
   append(element) {
     const last = this.findLast()
     if (last) {
-      last.next = new Node(element)
+      last.next = new LinkNode(element)
       last.next.prev = last
       this.size++
     }

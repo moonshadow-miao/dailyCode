@@ -7,9 +7,79 @@
 <body>
 <!--<script src="prefixTree.js"></script>-->
 <script>
-  let strList = ['abc', 'abcd', 'ab', 'acd', 'bda', 'acd', 'abcf', 'cf']
-  // 求字符数组中， 以ab 开头的字符数
+  let strList = ['abc', 'abcd', 'ab', 'acd', 'bda', 'acd', 'abcf', 'cf', 'abc']
 
+  // 求字符数组中， 以ab 开头的字符数
+  function prefixTree(strList) {
+    function startWith(str) {
+      const node = _search(str)
+      return node && node.path
+    }
+
+    function endWith(str) {
+      const node = _search(str)
+      return node && node.end
+    }
+
+    function remove(str) {
+      let node = _search(str)
+      if (!node) return
+      let index = 0
+      node = root
+      while (index < str.length) {
+        node.path--
+        if (!node.path) {
+          node.next[_getPath(str[index])] = null
+          return
+        }
+        node = node.next[_getPath(str[index])]
+        index++
+      }
+      node.path--
+      node.end--
+    }
+
+    const _getPath = str =>  str.charCodeAt(0) - 'A'.charCodeAt(0)
+
+    const _search = str => {
+      let index = 0
+      let node = root
+      while (index < str.length) {
+        if (!node) return null
+        node = node.next[_getPath(str[index])]
+        index++
+      }
+      return node
+    }
+
+    function add(str) {
+      if (!str) return
+      let node = root
+      let index = 0
+      while (index < str.length) {
+        node.path++
+        const path = _getPath(str[index])
+        !node.next[path] && (node.next[path] = newNode())
+        node = node.next[path]
+        index++
+      }
+      node.end++
+      node.path++
+    }
+
+    function view() {
+      return root
+    }
+
+    const newNode = () => ({path: 0, end: 0, next: []})
+    const root = newNode()
+
+    strList.forEach(add)
+
+    return {startWith, endWith, remove, add, view}
+  }
+
+  const tree = prefixTree(strList)
 </script>
 </body>
 </html>

@@ -1,10 +1,155 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<script src="./linkStack.js"></script>
+<!--<script src="./linkStack.js"></script>-->
+<script>
+  class Node {
+    constructor(data) {
+      this.data = data  // 节点的数据域
+      this.prev = null  // 节点的指针域
+      this.next = null  // 节点的指针域
+    }
+  }
+
+  class SingleList {
+    constructor(head) {
+      this.size = 1;  // 单链表的长度
+      this.head = new Node(head);  // 表头节点
+      this.curNode = this.head;  // 当前节点的指向
+    }
+
+    // 在单链表中寻找item元素
+    find(item) {
+      let node = this.head
+      while (node) {
+        if (node.data === item) {
+          return node
+        }
+        node = node.next
+      }
+      return null
+    }
+
+    // 向单链表中插入元素
+    insert(item, element) {
+      const pre = this.find(item)
+      if (pre) {
+        const next = pre.next
+        pre.next = new Node(element)
+        pre.next.next = next
+        this.size++
+      }
+    }
+
+    // 在单链表中删除一个节点
+    remove(item) {
+      let node = this.head
+      if (this.head.data === item) {
+        this.head = this.size === 1 ? null : node.next
+        this.size--
+        this.curNode = this.head
+        node = null
+        return
+      }
+      let pre = null
+      while (node.next) {
+        if (node.next.data === item) {
+          pre = node
+          break
+        }
+        node = node.next
+      }
+      if (pre) {
+        let cur = pre.next
+        pre.next = cur.next
+        cur = null
+        this.size--
+      }
+    }
+
+    // 在单链表的尾部添加元素
+    append(element) {
+      const last = this.findLast()
+      if (last) {
+        last.next = new Node(element)
+        this.size++
+      }
+    }
+
+    // 获取单链表的最后一个节点
+    findLast() {
+      if (this.size === 0) {
+        return null
+      }
+      let node = this.head
+      while (node.next) {
+        node = node.next
+      }
+      return node
+    }
+
+    // 判断单链表是否为空
+    isEmpty() {
+      return this.size === 0
+    }
+
+    // 显示当前节点
+    show() {
+      return this.curNode
+    }
+
+    // 获取单链表的长度
+    getLength() {
+      return this.size
+    }
+
+    // 从当前节点向前移动n个位置
+    advance(n, currNode) {
+      if (n > this.size || n <= 0) {
+        return null
+      }
+      let node = this.find(currNode)
+      while (n > 0 && node) {
+        node = node.next
+        n--
+      }
+      return node
+    }
+
+
+    // 单链表的遍历显示
+    display() {
+      const nodeList = []
+      let node = this.head
+      while (node) {
+        nodeList.push(node)
+        node = node.next
+      }
+      return nodeList
+    }
+
+    // 清空单链表
+    clear() {
+      let node = this.head
+      let next = node.next
+      while (next) {
+        next = node.next
+        node = null
+      }
+      node = next = this.curNode = null
+      this.size = 0
+    }
+  }
+
+  function generateLinkedList(arr) {
+    if (!arr.length) {
+      return
+    }
+    const LinkedList = new SingleList(arr[0])
+    for (let i = 1; i < arr.length; i++) {
+      LinkedList.append(arr[i])
+    }
+    return LinkedList
+  }
+</script>
 <script>
   function reverseDoubleLink(head) {
     let prev = null
@@ -19,6 +164,7 @@
     }
     return prev
   }
+
   // const head = generateLinkedList([1, 2, 3, 4, 5, 6]).head
   // console.log(reverseDoubleLink(head))
 
@@ -33,10 +179,11 @@
     }
     return prev
   }
+
   // const head = generateLinkedList([1, 2, 3, 4, 5, 6]).head
   // console.log(reverseSingleLink(head))
 
- // 删除链表中指定的项
+  // 删除链表中指定的项
   function removeSomeNode(head, nodeValue) {
     let newHead = head
     let prev = null
@@ -71,7 +218,9 @@
       if (!this.head) return null
       const popNode = this.head
       const next = this.head.next
-      if(!next) {this.last = null}
+      if (!next) {
+        this.last = null
+      }
       this.head = next
       return popNode
     }
@@ -102,6 +251,7 @@
     stack = []
     minStack = []
     min = null
+
     push(data) {
       if (this.min === null) {
         this.min = data
@@ -122,8 +272,157 @@
     }
   }
 
-</script>
-<body>
+  // 链表的快慢指针: 求链表中间节点, 中间节点分为中间靠左，中间靠右两种分法
+  function getMiddleNodeLeft(head) {
+    let slowPoint = head
+    let slowPointPrv = null
+    let fastPoint = head
 
-</body>
+    while (fastPoint.next && fastPoint.next.next) {
+      slowPointPrv = slowPoint
+      slowPoint = slowPoint.next
+      fastPoint = fastPoint.next.next
+    }
+    return [slowPoint, slowPoint.next]
+  }
+
+  function getMiddleNodeRight(head) {
+    let slowPoint = head
+    let fastPoint = head
+    while (fastPoint && fastPoint.next) {
+      slowPoint = slowPoint.next
+      fastPoint = fastPoint.next.next
+    }
+    return slowPoint
+  }
+
+  const headOdd = generateLinkedList([1, 2, 3, 4]).head
+  const headEven = generateLinkedList([1, 2, 3, 4, 5, 6]).head
+  const link1 = generateLinkedList([6, 1, 3, 3, 2, 5, 3, 3, 1]).head
+
+  // console.log(getMiddleNodeLeft(headOdd))
+  // console.log(getMiddleNodeLeft(headEven))
+
+  function reverseLink(head) {
+    if (!head) return head
+    let pre = null
+    let next = head.next
+    while (head) {
+      next = head.next
+      head.next = pre
+      pre = head
+      head = next
+    }
+    return pre
+  }
+
+  // 判断链表回文
+  function isPalindromes(head) {
+    const [middleLeft, middleRight] = getMiddleNodeLeft(head)
+    middleLeft.next = null
+    const rightReverseHead = reverseLink(middleRight)
+    let isisPalindrome = true
+    let leftStart = head
+    let rightStart = rightReverseHead
+    while (rightStart) {
+      if (leftStart.data !== rightStart.data) {
+        isisPalindrome = false
+        break
+      }
+      leftStart = leftStart.next
+      rightStart = rightStart.next
+    }
+    reverseLink(rightReverseHead)
+    middleLeft.next = middleRight
+    return isisPalindrome
+  }
+
+  // 链表荷兰国旗问题，partition,
+  function partition(head, target) {
+    let smallerHead = null
+    let biggerHead = null
+    let equalHead = null
+    let smallerCur = null
+    let biggerCur = null
+    let equalCur = null
+    let prev = null
+    while (head) {
+      prev = head
+      head = head.next
+      if (prev.data < target) {
+        !smallerHead ? (smallerCur = smallerHead = prev) : (smallerCur.next = prev)
+        smallerCur = prev
+      } else if (prev.data > target) {
+        !biggerHead ? (biggerCur = biggerHead = prev) : (biggerCur.next = prev)
+        biggerCur = prev
+      } else {
+        !equalHead ? (equalCur = equalHead = prev) : (equalCur.next = prev)
+        equalCur = prev
+      }
+      prev.next = null
+    }
+    const newHead = smallerHead || equalHead || biggerHead
+    if (smallerCur) {
+      smallerCur.next = equalHead || biggerHead
+    }
+    if (equalCur) {
+      equalCur.next = biggerHead
+    }
+    return newHead
+  }
+
+  // 链表的中的每一项都有一个random 指针指向链表中的另外一项，求如何复制这样的链表 [1, 2, 3, 4] 1.random = 3   2.random = 4   3.random = 2  4.random = 1
+  function copyRandomLink(head) {
+    if (!head) return null
+    let cur = head
+    let pre = null
+    while (cur) {
+      const newNode = new Node(cur.data)
+      pre = cur
+      cur = cur.next
+      pre.next = newNode
+      newNode.next = cur
+    }
+    cur = head
+    let copy, newHead
+    copy = newHead  = head.next
+    while (copy) {
+      copy.random = cur.random.next
+      cur = copy.next
+      copy = cur && cur.next
+    }
+    let preCopy = null
+    pre = null
+    cur = head
+    copy = head.next
+    while (copy.next) {
+      pre = cur
+      preCopy = copy
+      cur = cur.next.next
+      copy = copy.next.next
+      pre.next = cur
+      preCopy.next = copy
+    }
+    return newHead
+  }
+  let node1
+  const randomLink = node1 = new Node(1)
+  const node2 = randomLink.next = new Node(2)
+  const node3 = randomLink.next.next = new Node(3)
+  const node4 = randomLink.next.next.next = new Node(4)
+  node1.random = node3
+  node2.random = node4
+  node3.random = node2
+  node4.random = node1
+
+  // 给定两个可能有环可能无环的单链表，求如果两个链表相交，请返回相交的第一个节点
+  function getIntersectNode(head1, head2) {
+
+  }
+
+
+
+  console.log(getIntersectNode(head1, head2))
+
+</script>
 </html>
