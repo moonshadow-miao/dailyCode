@@ -5,6 +5,286 @@
     <title>Title</title>
 </head>
 <body>
-<script src="serialize中序.js"></script>
 </body>
+<script>
+  class Node {
+    constructor(value) {
+      this.value = value
+      this.left = null
+      this.right = null
+    }
+  }
+
+  class MultiTreeNode {
+    constructor(data, list = []) {
+      this.data = data
+      this.children = list // list: MultiTreeNode[]
+    }
+  }
+
+  function generatorTree(arr) {
+    let nodeList = arr.map(item => item || item === 0 ? new Node(item) : null)
+    let head = nodeList[0]
+    for (let i = 0; i < nodeList.length; i++) {
+      let node = nodeList[i]
+      if (node && nodeList[2 * i + 1]) {
+        node.left = nodeList[2 * i + 1]
+      }
+      if (node && nodeList[2 * i + 2]) {
+        node.right = nodeList[2 * i + 2]
+      }
+    }
+    return head
+  }
+
+</script>
+
+<script>
+  // 树形 dp
+
+  // 判断是否是完全二叉树
+  function isCompleteTree(head) {
+    let isLast = false
+
+    function process(head) {
+      if (!head) {
+        return true
+      }
+      if (head.left === null && head.right !== null) {
+        return false
+      }
+      if (head.left !== null && head.right === null) {
+        if (isLast) return false
+        isLast = true
+      }
+      const leftRes = process(head.left)
+      const rightRes = process(head.right)
+      return leftRes && rightRes
+    }
+
+    return process(head)
+  }
+
+  // const head = generatorTree([1, 2, 3, 4, 5, 6, 7, 8])
+  // console.log(isCompleteTree(head))
+
+  // 判断是否是平衡二叉树
+  function isBalanceTree(head) {
+    function process(head) {
+      if (!head) {
+        return {isBst: true, height: 0}
+      }
+      const left = process(head.left)
+      const right = process(head.right)
+      return {
+        isBst: left.isBst && right.isBst && Math.abs((left.height - right.height)) < 2,
+        height: Math.max(left.height, right.height) + 1
+      }
+    }
+
+    return process(head).isBst
+  }
+
+  // 判断是否是搜索二叉树
+  function isSearchTree(head) {
+    const max = Number.MAX_VALUE
+    const min = Number.MIN_VALUE
+
+    function process(head, min, max) {
+      if (!head) return true
+      return (head.value < max && head.value > min) && process(head.left, min, head.value) && process(head.right, head.value, max)
+    }
+
+    return process(head, min, max)
+  }
+
+  function isSearchTree2(head) {
+    const max = Number.MAX_VALUE
+    const min = Number.MIN_VALUE
+
+    function process(head) {
+      if (!head) return {isST: true, max: min, min: max}
+      const left = process(head.left)
+      const right = process(head.right)
+      return {
+        isST: left.isST && right.isST && head.value < right.min && head.value > left.max,
+        max: Math.max(head.value, right.max),
+        min: Math.min(head.value, left.min)
+      }
+    }
+
+    return process(head).isST
+  }
+
+  // 判断是否是满二叉树
+  function isFullTree(head) {
+    if (!head) return true
+    if (!head.left && !head.right) return true
+    if (!head.left || !head.right) return false
+    const left = isFullTree(head.left)
+    const right = isFullTree(head.right)
+    return left && right
+  }
+
+  function isFullTree2(head) {
+    function process(head) {
+      if (!head) return {nodeCount: 0, nodeHeight: 0}
+      const left = process(head.left)
+      const right = process(head.right)
+      return {
+        nodeCount: left.nodeCount + right.nodeCount + 1,
+        nodeHeight: Math.max(left.nodeHeight, right.nodeHeight) + 1
+      }
+    }
+
+    const {nodeCount, nodeHeight} = process(head)
+    return Math.pow(2, nodeHeight) === nodeCount + 1
+  }
+
+  // 求解二叉树上的最大距离(任意两个节点之间，经过节点数最多)
+  function getMaxDistance(head) {
+    function process(head) {
+      if (!head) {
+        return {maxHeight: 0, maxDistance: 0}
+      }
+      const left = process(head.left)
+      const right = process(head.right)
+      return {
+        maxHeight: Math.max(left.maxHeight, right.maxHeight) + 1,
+        maxDistance: Math.max(left.maxHeight + right.maxHeight + 1, left.maxDistance, right.maxDistance)
+      }
+    }
+
+    return process(head).maxDistance
+  }
+
+  // 一个二叉树上存在某个子树是搜索二叉树，求最多节点的子树，其节点数
+  function getMaxSearchTree(head) {
+    const maxvalue = Number.MAX_VALUE
+    const minvalue = Number.MIN_VALUE
+
+    function process(head) {
+      if (!head) return {isST: true, max: minvalue, min: maxvalue, maxSTCount: 0, nodeCount: 0}
+      const left = process(head.left)
+      const right = process(head.right)
+      const isST = left.isST && right.isST && head.value < right.min && head.value > left.max
+      const max = Math.max(head.value, right.max)
+      const min = Math.min(head.value, left.min)
+      return {
+        isST,
+        max,
+        min,
+        maxSTCount: isST ? left.nodeCount + right.nodeCount + 1 : Math.max(left.maxSTCount, right.maxSTCount),
+        nodeCount: left.nodeCount + right.nodeCount + 1
+      }
+    }
+
+    return process(head).maxSTCount
+  }
+
+  // 求二叉树上某两个节点的最近公共祖先节点
+  function getCommonAncestor(head, nodeValA, nodeValB) {
+    function process(head) {
+      if (!head || head.value === nodeValA || head.value === nodeValB) return head
+      const left = process(head.left)
+      const right = process(head.right)
+      return left && right ? head : left || right
+    }
+
+    return process(head)
+  }
+
+  // 给一个多叉树，现有一个集合包含一些节点（直接父子节点不能同时存在）， 求集合节点值累加最大值多少
+  function getMaxValue(head) {
+    function process(head, withCur) {
+      if (!head.children || !head.children.length) return withCur ? head.data : 0
+      return head.children.reduce((pre, node) => pre + (withCur ? process(node, false) : Math.max(process(node, true), process(node, false))), withCur ? head.data : 0)
+    }
+    return Math.max(process(head, true), process(head, false))
+  }
+
+  const head = new MultiTreeNode(10, [
+    new MultiTreeNode(21, [new MultiTreeNode(5), new MultiTreeNode(6), new MultiTreeNode(7, [new MultiTreeNode(30)])]),
+    new MultiTreeNode(3, [new MultiTreeNode(8), new MultiTreeNode(9), new MultiTreeNode(1)]),
+    new MultiTreeNode(4, [new MultiTreeNode(6)])
+  ])
+  console.log(getMaxValue(head))
+</script>
+
+<script>
+  // 二叉树的非递归遍历 后序
+  function postOrderIterator() {
+
+  }
+
+  // const head = generatorTree([1, 2, 3, 4, 5, 6, 7])
+  // console.log(postOrderIterator(head)) // 4, 5, 2, 6, 7, 3, 1
+
+  // 二叉树的层序遍历以及返回每层的数量
+  function widthIterator() {
+
+  }
+
+  // const head2 = generatorTree([1, 2, 3, 4, 5, 6, 7])
+  // console.log(widthIterator(head2)) // 1, 2, 4
+
+  // 二叉树的先序序列化和反序列化
+  function preSerializeAndAntiSerialize(head) {
+    function serialize(treeNode) {
+      return ''
+    }
+
+    const str = serialize(head)
+    console.log(str)
+
+    function antiSerialize(str) {
+      return null
+    }
+
+    console.log(antiSerialize(str))
+  }
+
+  // 二叉树的后序序列化和反序列化
+  function postSerializeAndAntiSerialize(head) {
+    function serialize(treeNode) {
+      return ''
+    }
+
+    const str = serialize(head)
+    console.log(str)
+
+    function antiSerialize(str) {
+      return null
+    }
+
+    console.log(antiSerialize(str))
+  }
+
+  // 多叉树的序列化和反序列化（用二叉树表示）
+  function multiTreeSerializeAndAntiSerialize(head) {
+    function serialize(treeNode) {
+      return ''
+    }
+
+    const str = serialize(head)
+    console.log(str)
+
+    function antiSerialize(str) {
+      return null
+    }
+  }
+
+  // const head = new MultiTreeNode(1, [new MultiTreeNode(2, [new MultiTreeNode(5), new MultiTreeNode(6), new MultiTreeNode(7)]), new MultiTreeNode(3, [new MultiTreeNode(8), new MultiTreeNode(9), new MultiTreeNode(10)]), new MultiTreeNode(4, [new  MultiTreeNode(11)])])
+  // console.log(multiTreeSerializeAndAntiSerialize(head))
+
+  // 求二叉树的层节点，数量最多
+  function getMostWidth(head) {
+
+  }
+
+  // 求二叉树的任意节点的后继节点，二叉树有parent指针指向父节点
+  function getNextNode(head) {
+
+  }
+</script>
 </html>
