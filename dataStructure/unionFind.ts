@@ -1,10 +1,14 @@
 // 并查集
 class UnionFind {
+  private elementMap: Map<any, any>;
+  private fatherMap: Map<any, any>;
+  private sizeMap: Map<any, any>;
   constructor(list) {
     this.elementMap = new Map() // <value, element>
     this.fatherMap = new Map() // <element, element> 子 => 父
     this.sizeMap = new Map() // 每个集合的长度，<element, int>
     list.forEach(value => {
+      // @ts-ignore
       let element =  new Element(value)
       this.elementMap.set(value, element)
       this.fatherMap.set(element, element)
@@ -49,7 +53,9 @@ class UnionFind {
   }
 }
 
+// @ts-ignore
 class Element {
+  private value: any;
   constructor(value) {
     this.value = value
   }

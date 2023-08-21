@@ -52,7 +52,7 @@ class PriorityQueue<T> {
   }
 }
 
-function priorityQueue<T extends object>(compare: (a: any, b: any) => number) {
+function priorityQueue<T extends object>(compare: (a: T, b: T) => number) {
   if (typeof compare !== 'function') {
     throw Error('compare must be a function')
   }

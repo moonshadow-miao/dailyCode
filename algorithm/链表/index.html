@@ -245,7 +245,8 @@
       return data
     }
   }
-
+</script>
+<script>
   // O(1) 复杂度获取栈中最小的元素
   class minStack {
     stack = []
@@ -298,7 +299,6 @@
 
   const headOdd = generateLinkedList([1, 2, 3, 4]).head
   const headEven = generateLinkedList([1, 2, 3, 4, 5, 6]).head
-  const link1 = generateLinkedList([6, 1, 3, 3, 2, 5, 3, 3, 1]).head
 
   // console.log(getMiddleNodeLeft(headOdd))
   // console.log(getMiddleNodeLeft(headEven))
@@ -405,24 +405,115 @@
     }
     return newHead
   }
-  let node1
-  const randomLink = node1 = new Node(1)
-  const node2 = randomLink.next = new Node(2)
-  const node3 = randomLink.next.next = new Node(3)
-  const node4 = randomLink.next.next.next = new Node(4)
-  node1.random = node3
-  node2.random = node4
-  node3.random = node2
-  node4.random = node1
+  const randomLink = (function () {
+    let node1 = new Node(1)
+    const node2 = node1.next = new Node(2)
+    const node3 = node1.next.next = new Node(3)
+    const node4 = node1.next.next.next = new Node(4)
+    node1.random = node3
+    node2.random = node4
+    node3.random = node2
+    node4.random = node1
+    return node1
+  })()
 
   // 给定两个可能有环可能无环的单链表，求如果两个链表相交，请返回相交的第一个节点
   function getIntersectNode(head1, head2) {
+    // 判断链表是否为环状链表，如果是, 返回入环节点
+    function getLoopNode(head) {
+      if (!head || !head.next) return null
+      let fast = head
+      let slow = head
+      while (slow && fast.next) {
+        fast = fast.next.next
+        slow = slow.next
+        if (fast === slow) {
+          break
+        }
+      }
+      if (fast.next) {
+        fast = head
+        while (fast !== slow) {
+          fast = fast.next
+          slow = slow.next
+        }
+        return fast
+      }
+      return null
+    }
 
+    // 求两个相交链表的交点
+    function getLinkIntersect(head1, head2) {
+      if (!head1 || !head2) return null
+      if (head1 === head2) return head1
+      let count = 0
+      let link1 = head1
+      let link2 = head2
+      while (head1.next || head2.next) {
+        if (head1.next) {
+          head1 = head1.next
+          count++
+        }
+        if (head2.next) {
+          head2 = head2.next
+          count--
+        }
+      }
+      if (head1 !== head2) return null
+      if (count === 0) return head1
+      let longer, shorter
+      if (count > 0) {
+        longer = link1
+        shorter = link2
+      } else {
+        longer = link2
+        shorter = link1
+      }
+      count = Math.abs(count)
+      while (count) {
+        longer = longer.next
+        count--
+      }
+      while (longer) {
+        if (longer === shorter) {
+          return longer
+        }
+        longer = longer.next
+        shorter = shorter.next
+      }
+      return null
+    }
+
+    const head1Loop = getLoopNode(head1)
+    const head2Loop = getLoopNode(head2)
+    // 两个链表无环
+    if (!head1Loop && !head2Loop) return getLinkIntersect(head1, head2)
+    // 两个链表一方有环
+    if (!head1Loop || !head2Loop) return null
+    // 两个链表都有环
+        // 两个入环相同
+    if(head1Loop === head2Loop) {
+      const next = head1Loop.next
+      head1Loop.next = null
+      const commonNode = getLinkIntersect(head1, head2)
+      head1Loop.next = next
+      return commonNode
+    }
+        // 两个入环节点不同
+    return head1Loop
   }
 
+  const link1 = generateLinkedList([1, 2, 3, 4, 5])
+  const commonLink = generateLinkedList([6, 7, 8, 9])
+  link1.findLast().next = commonLink.head
+  const loopNode1 = link1.find(6)
+  const loopNode2 = link1.find(9)
+  loopNode2.next = loopNode1
 
+  const link2 = generateLinkedList([11, 12, 13, 14, 15, 16, 17, 18])
+  link2.findLast().next = commonLink.head
 
-  console.log(getIntersectNode(head1, head2))
+  console.log(getIntersectNode(link1.head, link2.head))
 
 </script>
 </html>

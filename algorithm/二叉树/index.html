@@ -37,6 +37,24 @@
     return head
   }
 
+  function generatorTreeWithParentPoint(arr) {
+    let nodeList = arr.map(item => item || item === 0 ? new Node(item) : null)
+    let head = nodeList[0]
+    head.parent = null
+    for (let i = 0; i < nodeList.length; i++) {
+      let node = nodeList[i]
+      if (node && nodeList[2 * i + 1]) {
+        node.left = nodeList[2 * i + 1]
+        nodeList[2 * i + 1] && (nodeList[2 * i + 1].parent = node)
+      }
+      if (node && nodeList[2 * i + 2]) {
+        node.right = nodeList[2 * i + 2]
+        nodeList[2 * i + 2] && (nodeList[2 * i + 2].parent = node)
+      }
+    }
+    return head
+  }
+
 </script>
 
 <script>
@@ -208,37 +226,99 @@
     new MultiTreeNode(3, [new MultiTreeNode(8), new MultiTreeNode(9), new MultiTreeNode(1)]),
     new MultiTreeNode(4, [new MultiTreeNode(6)])
   ])
-  console.log(getMaxValue(head))
+  // console.log(getMaxValue(head))
 </script>
 
 <script>
-  // 二叉树的非递归遍历 后序
-  function postOrderIterator() {
-
+  // 二叉树的非递归遍历 中序
+  function inOrderIterator(head) {
+    if (!head) return
+    let stack = []
+    function joinLeft (node) {
+      stack.push(node)
+      while (node) {
+        node.left && stack.push(node.left)
+        node = node.left
+      }
+    }
+    joinLeft(head)
+    while (stack.length) {
+      head = stack.pop()
+      console.log(head.value)
+      if (head.right) {
+        joinLeft(head.right)
+      }
+    }
   }
 
-  // const head = generatorTree([1, 2, 3, 4, 5, 6, 7])
-  // console.log(postOrderIterator(head)) // 4, 5, 2, 6, 7, 3, 1
+  // const head1 = generatorTree([1, 2, 3, 4, 5, 6, 7])
+  // inOrderIterator(head1)
 
   // 二叉树的层序遍历以及返回每层的数量
-  function widthIterator() {
-
+  function widthIterator(head) {
+    let curLevelEnd = head
+    let nextLevelEnd = null
+    let curLevelNums = 0
+    let curLevel = 1
+    let queue = [head]
+    while (queue.length) {
+      const node = queue.shift()
+      curLevelNums++
+      console.log(node.value)
+      if (node.left) {
+        nextLevelEnd = node.left
+        queue.push(node.left)
+      }
+      if (node.right) {
+        nextLevelEnd = node.right
+        queue.push(node.right)
+      }
+      if (node === curLevelEnd) {
+        console.log(`当前第${curLevel}层共有${curLevelNums}个节点`)
+        curLevel++
+        curLevelNums = 0
+        curLevelEnd = nextLevelEnd
+        nextLevelEnd = null
+      }
+    }
   }
 
-  // const head2 = generatorTree([1, 2, 3, 4, 5, 6, 7])
-  // console.log(widthIterator(head2)) // 1, 2, 4
+  // const head2 = generatorTree([1, 2, 3, 4, 5, null, 7, 8])
+  // widthIterator(head2)
 
   // 二叉树的先序序列化和反序列化
   function preSerializeAndAntiSerialize(head) {
     function serialize(treeNode) {
-      return ''
+      function process(head) {
+        if (!head) {
+          return '#'
+        }
+        const left = process(head.left)
+        const right = process(head.right)
+        return `${head.value},${left},${right}`
+      }
+      return process(treeNode)
     }
 
     const str = serialize(head)
+
     console.log(str)
 
     function antiSerialize(str) {
-      return null
+      const nodeList = str.split(',')
+      const headStr = nodeList.shift()
+      function process(headStr) {
+        if (headStr === '#' || !nodeList.length) {
+          return null
+        }
+        const head = new Node(headStr)
+        const left = process(nodeList.shift())
+        const right = process(nodeList.shift())
+        head.left = left
+        head.right = right
+        return head
+      }
+      return process(headStr)
     }
 
     console.log(antiSerialize(str))
@@ -247,44 +327,96 @@
   // 二叉树的后序序列化和反序列化
   function postSerializeAndAntiSerialize(head) {
     function serialize(treeNode) {
-      return ''
+      function process(head) {
+        if (!head) {
+          return '#'
+        }
+        const left = process(head.left)
+        const right = process(head.right)
+        return `${left},${right},${head.value}`
+      }
+      return process(treeNode)
     }
 
     const str = serialize(head)
     console.log(str)
 
     function antiSerialize(str) {
-      return null
+      const nodeList = str.split(',').reverse()
+      const headStr = nodeList.shift()
+      function process(headStr) {
+        if (headStr === '#') {
+          return null
+        }
+        const left = process(nodeList.shift())
+        const right = process(nodeList.shift())
+        const head = new Node(headStr)
+        head.left = left
+        head.right = right
+        return head
+      }
+      return process(headStr)
     }
 
     console.log(antiSerialize(str))
   }
 
+  // const head2 = generatorTree([1, 2, 3, 4, 5, 6, 7])
+  // postSerializeAndAntiSerialize(head2)
+
   // 多叉树的序列化和反序列化（用二叉树表示）
   function multiTreeSerializeAndAntiSerialize(head) {
-    function serialize(treeNode) {
-      return ''
+    function generatorChild(head, multiTList) {
+      const firstChild = convertMultiToSingle(multiTList.shift())
+      head.left = firstChild
+      head = firstChild
+      while (multiTList.length) {
+        head = head.right = convertMultiToSingle(multiTList.shift())
+      }
+    }
+    function convertMultiToSingle(head) {
+      if (!head) return null
+      const newHead = new Node(head.data)
+      // 规定多叉树的子节点放在父节点的左树的右子树链上
+      if(head.children) {
+        generatorChild(newHead, head.children)
+      }
+      return newHead
     }
 
-    const str = serialize(head)
-    console.log(str)
-
-    function antiSerialize(str) {
-      return null
-    }
+    const tree = convertMultiToSingle(head)
+    preSerializeAndAntiSerialize(tree)
   }
 
-  // const head = new MultiTreeNode(1, [new MultiTreeNode(2, [new MultiTreeNode(5), new MultiTreeNode(6), new MultiTreeNode(7)]), new MultiTreeNode(3, [new MultiTreeNode(8), new MultiTreeNode(9), new MultiTreeNode(10)]), new MultiTreeNode(4, [new  MultiTreeNode(11)])])
-  // console.log(multiTreeSerializeAndAntiSerialize(head))
-
-  // 求二叉树的层节点，数量最多
-  function getMostWidth(head) {
-
-  }
+  const headMulti = new MultiTreeNode(1, [new MultiTreeNode(2, [new MultiTreeNode(5), new MultiTreeNode(6), new MultiTreeNode(7)]), new MultiTreeNode(3, [new MultiTreeNode(8), new MultiTreeNode(9), new MultiTreeNode(10)]), new MultiTreeNode(4, [new  MultiTreeNode(11)])])
+  multiTreeSerializeAndAntiSerialize(headMulti)
 
   // 求二叉树的任意节点的后继节点，二叉树有parent指针指向父节点
   function getNextNode(head) {
 
+    function getMostLeftNode(node) {
+      if (!node) return null
+      while (node.left) {
+        node = node.left
+      }
+      return node
+    }
+
+    if (head.right) {
+      // 获取右树上最左子节点
+      return getMostLeftNode(head.right)
+    }
+    while (head.parent) {
+      if (head.parent.left === head) {
+        return head.parent
+      }
+      head = head.parent
+    }
+    return null
   }
+
+  // const head2 = generatorTreeWithParentPoint([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+  // const node = head2.left.right.right
+  // console.log(getNextNode(node))
 </script>
 </html>
