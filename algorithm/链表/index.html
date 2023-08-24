@@ -503,17 +503,22 @@
     return head1Loop
   }
 
-  const link1 = generateLinkedList([1, 2, 3, 4, 5])
-  const commonLink = generateLinkedList([6, 7, 8, 9])
-  link1.findLast().next = commonLink.head
-  const loopNode1 = link1.find(6)
-  const loopNode2 = link1.find(9)
-  loopNode2.next = loopNode1
 
-  const link2 = generateLinkedList([11, 12, 13, 14, 15, 16, 17, 18])
-  link2.findLast().next = commonLink.head
 
-  console.log(getIntersectNode(link1.head, link2.head))
+
+  var swapPairs = function(head) {
+    if(!head) return null
+    if(!head.next) return head
+    const next = head.next
+    const link = swapPairs(next.next)
+    next.next = head
+    head.next = link
+    head = next
+    return head
+  }
+
+  const link2 = generateLinkedList([1]).head
+  console.log(swapPairs(link2));
 
 </script>
 </html>

@@ -389,7 +389,7 @@
   }
 
   const headMulti = new MultiTreeNode(1, [new MultiTreeNode(2, [new MultiTreeNode(5), new MultiTreeNode(6), new MultiTreeNode(7)]), new MultiTreeNode(3, [new MultiTreeNode(8), new MultiTreeNode(9), new MultiTreeNode(10)]), new MultiTreeNode(4, [new  MultiTreeNode(11)])])
-  multiTreeSerializeAndAntiSerialize(headMulti)
+  // multiTreeSerializeAndAntiSerialize(headMulti)
 
   // 求二叉树的任意节点的后继节点，二叉树有parent指针指向父节点
   function getNextNode(head) {
@@ -420,3 +420,179 @@
   // console.log(getNextNode(node))
 </script>
 </html>
+<script>
+  var flatten = function(root) {
+    if (!root) return null
+    if (!root.right && !root.left) return root
+    const left = root.left
+    const right = root.right
+    root.left = null
+    const lastNodeLeft = flatten(left)
+    const lastNodeRight = flatten(right)
+    root.right = left
+    if (lastNodeLeft) {
+      lastNodeLeft.right = right
+    } else {
+      root.right = right
+    }
+    return lastNodeRight || lastNodeLeft
+  }
+
+  var sortedListToBST = function(head) {
+    if(!head) return null
+    function getMidlleNode(head) {
+      if (!head) return null
+      // 快慢指针找到中点
+      let fast, slow, prev
+      fast = slow = head
+      while(fast && fast.next) {
+        prev = slow
+        fast = fast.next.next
+        slow = slow.next
+      }
+      return [slow, prev, slow.next]
+    }
+
+    function process(head) {
+      if(!head) return null
+      if (!head.next) return head
+      const [middle, prev, next] = getMidlleNode(head)
+      prev && (prev.next = null)
+      middle.next = null
+      middle.left = process(head)
+      middle.right = process(next)
+      return middle
+    }
+    return process(head)
+  };
+
+
+  var sumNumbers = function(root) {
+    function process(root, sum) {
+      if(!root) {
+        return sum
+      }
+      const left = process(root.left, root.value + sum * 10)
+      const right = process(root.right, root.value + sum * 10)
+      return root.left && root.right ? left + right : root.left ? left : right
+    }
+    return process(root, 0)
+  }
+
+  var levelOrder = function(root) {
+    if(!root) {
+      return []
+    }
+    const left = levelOrder(root.left)
+    const right = levelOrder(root.right)
+    return left.concat(right)
+  }
+
+  var levelOrder2 = function(root) {
+    if(!root) return []
+    const queue = [root]
+    const list = []
+    let curEnd = root
+    let nextEnd = root
+    let curList = []
+    while (queue.length) {
+      root = queue.shift()
+      curList.push(root.val)
+      list.push(root.val)
+      if (root.left) {
+        nextEnd = root.left
+        queue.push(root.left)
+      }
+      if (root.right) {
+        nextEnd = root.right
+        queue.push(root.right)
+      }
+      if (curEnd === root) {
+        list.push(curList)
+        curList = []
+        curEnd = nextEnd
+        nextEnd = null
+      }
+    }
+    return list
+  };
+
+  var treeToDoublyList = function(root) {
+    if (!root) {
+      return null
+    }
+    let head = null
+    let prev = null
+
+    function change(cur) {
+      if(!head) (head = cur)
+      prev && (prev.next = cur)
+      cur.prev = prev
+      prev = cur
+    }
+
+    function adjust(root) {
+      root.left  = root.prev
+      root.prev = null
+      delete root.prev
+      root.right = root.next
+      root.next = null
+      delete root.next
+    }
+
+    function process(root) {
+      if (!root) return
+      process(root.left)
+      change(root)
+      process(root.right)
+    }
+
+    process(root)
+    head.prev = prev
+    prev.next = head
+    while (prev !== head.left) {
+      adjust(prev)
+      prev = prev.left
+    }
+    return head
+  }
+
+  var pathSum = function(root, target) {
+    if (!root) return []
+    const resList = []
+    function process(node, list, sum) {
+      if(!node) return
+      if(!node.left && !node.right) {
+        (sum + node.value) === target && resList.push(list.concat(node.value))
+        return
+      }
+      process(node.left, list.concat(node.value), sum + node.value)
+      process(node.right, list.concat(node.value), sum + node.value)
+    }
+    process(root, [], 0)
+    return resList
+  }
+
+  var isSubStructure = function(A, B) {
+    function process(root, sub) {
+      if (!root || !sub) {
+        return !root && !sub
+      }
+      let leftIsSub
+      let rightIsSub
+      if (root.value === sub.value) {
+        leftIsSub = sub.left ? process(root.left, sub.left) : true
+        rightIsSub = leftIsSub ? (sub.right ? process(root.right, sub.right) : true) : false
+        if(leftIsSub && rightIsSub) return true
+      }
+      leftIsSub = process(root.left, B)
+      rightIsSub = process(root.right, B)
+      return leftIsSub || rightIsSub
+    }
+    return process(A, B)
+  };
+  const rootA = generatorTree([4,2,3,4,5,6,7,8,9])
+  const rootB = generatorTree([4,8])
+  console.log(isSubStructure(rootA, rootB));
+
+</script>
