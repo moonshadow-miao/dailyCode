@@ -1,23 +1,29 @@
-class Node {
-  constructor(data) {
-    this.data = data;  // 节点的数据域
-    this.prev = null;  // 节点的指针域
-    this.next = null;  // 节点的指针域
+class LinkNode<T> {
+  data: any;
+  prev: null;
+  next: null;
+  constructor(data: T) {
+    this.data = data
+    this.prev = null
+    this.next = null
   }
 }
 
-class Queue {
+class Queue<T> {
+  private head: LinkNode<T> | null
+  private size: number
+  private last: LinkNode<T> | null
   constructor(arr = []) {
     this.head = null
     this.size = 0
     this.last = null
     if (arr.length) {
-      this.head = new Node(arr[0])
+      this.head = new LinkNode<T>(arr[0])
       let newNode = null
       let cur = this.head
       this.size++
       for(let i = 1; i < arr.length; i++) {
-        newNode = new Node(arr[i])
+        newNode = new LinkNode<T>(arr[i])
         cur.next = newNode
         this.last = newNode
         cur = newNode
@@ -72,4 +78,4 @@ class Queue {
   }
 }
 
-console.log(new Queue([1, 2, 3]))
+export default Queue

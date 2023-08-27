@@ -80,7 +80,7 @@
         }
     }
 
-    const deepClone = (target, map = new WeakMap()) => {
+    const deepClone111 = (target, map = new WeakMap()) => {
         if(!isObject(target))
             return target;
         let type = getType(target);
@@ -121,11 +121,23 @@
         }
         return cloneTarget;
     }
+</script>
 
-    var b = {a: 1, b: a => a, c: function fn() {
-        console.log(111)
-    }}
+<script src="deepClone.js"></script>
+<script>
+  var b = {a: 1, b: a => a, c: function fn() {
+      console.log(111)
+    },
+    e: /\a/g,
+    f: [{name: 1, age: 2}]
+  }
+  b.b = b
+  const pro = Object.getPrototypeOf(b)
+  pro.pro = {mm: 1}
 
-    var a = deepClone(b)
+  var a = deepClone(b)
+
+  console.log(b)
+  console.log(a)
 </script>
 

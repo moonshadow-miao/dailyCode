@@ -1,57 +1,3 @@
-class PriorityQueue<T> {
-  private heap: T[];
-  private compare: (a, b) => number;
-  constructor(list, compare = (a, b) => a - b) {
-    this.heap = []
-    this.compare = compare
-    list.forEach(this.add.bind(this))
-  }
-
-  add(val) {
-    // 从下往上调整
-    this.heap.push(val)
-    let childIndex = this.heap.length - 1
-    let parentIndex = Math.floor((childIndex - 1) / 2)
-    while (parentIndex >= 0) {
-      if (this.compare(this.heap[parentIndex], this.heap[childIndex]) > 0) {
-        this.swap(parentIndex, childIndex)
-      }
-      childIndex = parentIndex
-      parentIndex = Math.floor((childIndex - 1) / 2)
-    }
-  }
-
-  offer() {
-    if (!this.heap.length) {
-      return
-    }
-    this.swap(0, this.heap.length - 1)
-    let val = this.heap.pop()
-    this.heapFy()
-    return val
-  }
-
-  heapFy(index = 0) {
-    // 从上往下调整
-    let parentIndex = index
-    let childIndex = this.compare(this.heap[parentIndex * 2 + 1], this.heap[ parentIndex * 2 +  2]) < 0 ? parentIndex * 2 + 1 : parentIndex * 2 + 2
-    while (parentIndex < this.heap.length) {
-      if (this.compare(this.heap[parentIndex], this.heap[childIndex]) > 0) {
-        this.swap(parentIndex, childIndex)
-      }
-      parentIndex = childIndex
-      childIndex = this.compare(this.heap[parentIndex * 2 + 1], this.heap[ parentIndex * 2 +  2]) < 0 ? parentIndex * 2 + 1 : parentIndex * 2 + 2
-    }
-  }
-
-  swap(index1, index2) {
-    let temp = this.heap[index1]
-    this.heap[index1] = this.heap[index2]
-    this.heap[index2] = temp
-    temp = null
-  }
-}
-
 function priorityQueue<T extends object>(compare: (a: T, b: T) => number) {
   if (typeof compare !== 'function') {
     throw Error('compare must be a function')
@@ -160,22 +106,7 @@ function priorityQueue<T extends object>(compare: (a: T, b: T) => number) {
 
   return {init, offer, add, update, remove, peek, clear, viewQueue: () => heap}
 }
-
-const queue = priorityQueue<{a: number}>((a, b) => a.a - b.a);
-
-const a11 = {a: 11}, a4 = {a: 4}, a13 ={a: 13}, a1 = {a: 1}, a5= {a: 5}
-queue.init([a11, a4, a13, a1, a5])
-const a0 = {a: 0}
-queue.add(a0)
-a11.a = 3
-const a3 = a11
-queue.update(a3)
-console.log(queue.viewQueue().map(item => item.a))
-queue.offer()
-console.log(queue.viewQueue().map(item => item.a))
-queue.remove(a3)
-console.log(queue.viewQueue().map(item => item.a))
-console.log(queue)
+export default priorityQueue
 
 
 
