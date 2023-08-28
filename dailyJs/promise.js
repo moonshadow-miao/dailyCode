@@ -80,7 +80,7 @@ class TPromise {
 
   then(onResolved, onRejected) {
     onResolved = typeof onResolved === 'function' ? onResolved : x => x
-    onRejected = typeof onRejected === 'function' ? onRejected : x => x
+    onRejected = typeof onRejected === 'function' ? onRejected : x => throw(x)
     let newPromise
     if (this.status === RESOLVE) {
       return newPromise = new TPromise((resolve, reject) => {

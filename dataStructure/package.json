@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "test": "tsc priorityQueue.ts"
+    "build": "tsc unionFind.ts -watch",
+    "test": "node promise.js"
   },
   "keywords": [
     "js",
@@ -19,6 +20,7 @@
     "@babel/preset-typescript": "^7.22.5"
   },
   "dependencies": {
+    "promises-aplus-tests": "^2.1.2",
     "typescript": "^5.1.6"
   }
 }
