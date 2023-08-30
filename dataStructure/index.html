@@ -9,78 +9,27 @@
 </body>
 </html>
 <script>
-  var numIslands = function (grid) {
-    if (!grid.length) return 0
-    function UnionFind(data) {
-      var _this = this;
-      this.size = [];
-      this.parent = [];
-      this.setsNum = 0;
-      this.size = Array(data.length).fill(1);
-      this.parent = data.map(function (_, index) {
-        return index;
-      });
-      this.elements = new Map();
-      data.forEach(function (item, index) {
-        return _this.elements.set(item, index);
-      });
-      this.data = data;
-      this.setsNum = data.length;
+
+  var uniquePaths = function(m, n) {
+    const dp = Array(m + 1).fill('').map(() => [])
+    dp[0] = Array(n + 1).fill(0)
+    for (let index = 0; index <= m; index++) {
+      dp[index][0] = 0
     }
-
-    UnionFind.prototype.findHead = function (index) {
-      var list = [];
-      while (index !== this.parent[index]) {
-        list.push(index);
-        index = this.parent[index];
-      }
-      while (list.length) {
-        this.parent[list.pop()] = index;
-      }
-      return index;
-    };
-    UnionFind.prototype.union = function (item1, item2) {
-      var index1 = this.elements.get(item1);
-      var index2 = this.elements.get(item2);
-      if (index1 === undefined || index2 === undefined) {
-        return;
-      }
-      var head1 = this.findHead(index1);
-      var head2 = this.findHead(index2);
-      if (head1 === head2) {
-        return;
-      }
-      var bigger = this.size[head1] > this.size[head2] ? head1 : head2;
-      var smaller = this.size[head1] > this.size[head2] ? head2 : head1;
-      this.parent[smaller] = bigger;
-      this.size[bigger] = this.size[head1] + this.size[head2];
-      this.size[smaller] = 0;
-      this.setsNum--;
-    };
-    UnionFind.prototype.add = function (item) {
-      if (!this.elements.get(item)) {
-        this.data.push(item);
-        this.parent.push(this.data.length - 1);
-        this.size.push(1);
-        this.elements.set(item, this.data.length - 1);
-        this.setsNum++;
-      }
-    };
-
-    const uf = new UnionFind([])
-    for (let row = 0; row < grid.length; row++) {
-      const rowList = grid[row]
-      for (let col = 0; col < rowList.length; col++) {
-        if (rowList[col] === '1') {
-          uf.add(`${col},${row}`)
-          col > 0 && uf.union(`${col},${row}`, `${col - 1},${row}`)
-          row > 0 && uf.union(`${col},${row}`, `${col},${row - 1}`)
+    let i = 1
+    let j = 1
+    for (; i <= m; i++) {
+      for(j = 1; j <= n; j++) {
+        if (i === 1 || j === 1) {
+          dp[i][j] = 1
+        } else {
+          dp[i][j] = dp[i-1][j] + dp[i][j-1]
         }
       }
     }
-    console.log(uf)
-    return uf.setsNum
+    console.log(dp)
+    return dp[m][n]
   };
 
-  console.log(numIslands([["0"]]));
+  console.log(uniquePaths(5, 5));
 </script>
