@@ -1,7 +1,5 @@
-import module from './moduleA'
+const a = require('./moduleA')
 
-function f() {
-   console.log(module)
-}
-
-f()
+setTimeout(() => {
+   console.log(a);
+}, 100)

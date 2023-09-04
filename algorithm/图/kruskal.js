@@ -42,8 +42,6 @@ class UnionFind {
   }
 }
 
-
-
 class Node {
   constructor(value) {
     this.value = value

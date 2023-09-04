@@ -5,11 +5,187 @@
     <title>Title</title>
 </head>
 <body>
+<script src="./structure.js"></script>
 <script>
-  var coinChange = function(coins, amount) {
 
+  var rotateRight = function (head, k) {
+    if (!head) {
+      return null
+    }
+    if (k === 0) return head
+    let fast, slow, count, last, slowPre
+    fast = slow = head
+    count = 1
+    last = null
+    while (fast && fast.next) {
+      slowPre = slow
+      slow = slow.next
+      last = fast.next.next ? fast.next.next : fast.next
+      fast = fast.next.next
+      count += fast ? 2 : 1
+    }
+    const slowPoi = (count >> 1) + 1
+    if (k % count === 0) return head
+    let splitPos = count - (k % count)
+    let cur = splitPos < slowPoi ? head : slow
+    let pre = splitPos < slowPoi ? null : slowPre
+    let step = splitPos < slowPoi ? splitPos - 1 : (splitPos - slowPoi)
+    while (step) {
+      step--
+      pre = cur
+      cur = cur.next
+    }
+    const newHead = cur.next
+    cur.next && (cur.next = null)
+    last.next = head
+    return newHead
+  };
+
+
+  var partition = function (head, x) {
+    if (!head) {
+      return null
+    }
+    let leftLast = null
+    let leftHead = null
+    let cur = head
+    let rightHead = null
+    let rightLast = null
+    while (cur) {
+      if (cur.val >= x) {
+        !rightHead ? (rightHead = cur) : (rightLast.last = cur)
+        rightLast = cur
+        leftLast && (leftLast.next = cur.next)
+        cur = cur.next
+        rightLast.next = null
+      } else {
+        !leftHead && (leftHead = cur)
+        leftLast = cur
+        cur = cur.next
+      }
+    }
+    leftLast && (leftLast.next = rightHead)
+    return leftHead || rightHead
   }
-  console.log(coinChange([[1, 2, 5]]))
+
+  var reverseBetween = function(head, left, right) {
+    let newHead = head
+    let last = null
+    let index = 1
+    function reverseLink(head) {
+      let pre = null
+      let next = null
+      let last = head
+      while (head) {
+        next = head.next
+        head.next = pre
+        pre = head
+        head = next
+        if (index++ === right) break
+      }
+      last.next = next
+      return [pre, last, next]
+    }
+
+    while (head) {
+      if (index === left) {
+        const [reverseHead, reverseLast, next] = reverseLink(head)
+        !last ? (newHead = reverseHead) : (last.next = reverseHead)
+        reverseLast.next = next
+        return newHead
+      }
+      last = head
+      head = head.next
+      index++
+    }
+  };
+
+  var strTree = () => {
+    var Trie = function () {
+      this.root = {
+        path: 0,
+        end: 0,
+        children: []
+      }
+      const start = 'a'.charCodeAt()
+      this.getCharIndex = str => str.charCodeAt() - start
+    };
+
+    /**
+     * @param {string} word
+     * @return {void}
+     */
+    Trie.prototype.insert = function (word) {
+      let index = 0
+      let root = this.root
+      while (index < word.length) {
+        root.path++
+        const childIndex = this.getCharIndex(word[index])
+        root = root.children[childIndex] || (root.children[childIndex] = {
+          path: 0,
+          end: 0,
+          children: []
+        })
+        index++
+      }
+      root.path++
+      root.end++
+    };
+
+    /**
+     * @param {string} word
+     * @return {boolean}
+     */
+    Trie.prototype.search = function (word) {
+      let index = 0
+      let root = this.root
+      while (index < word.length && root) {
+        const childIndex = this.getCharIndex(word[index])
+        root = root.children[childIndex]
+        index++
+      }
+      return root ? root.end >= 1 : false
+    };
+
+    /**
+     * @param {string} prefix
+     * @return {boolean}
+     */
+    Trie.prototype.startsWith = function (prefix) {
+      let index = 0
+      let root = this.root
+      while (index < prefix.length && root) {
+        const childIndex = this.getCharIndex(prefix[index])
+        root = root.children[childIndex]
+        index++
+      }
+      return root ? root.path >= 1 : false
+    };
+
+    return new Trie()
+  }
+
+  var findDuplicate = function(nums) {
+    let fast = 0
+    let slow = 0
+    while (true) {
+      fast+= 2
+      slow++
+      fast = fast < nums.length ? fast : (fast % nums.length)
+      slow = slow < nums.length ? slow : (slow % nums.length)
+      if (fast === slow) break
+    }
+    fast = 0
+    while (fast !== slow) {
+      fast++
+      slow++
+      fast = fast < nums.length ? fast : (fast % nums.length)
+      slow = slow < nums.length ? slow : (slow % nums.length)
+    }
+    return nums[slow]
+  };
+
+  console.log(findDuplicate([1,3,4,2,2]));
 </script>
 </body>
 </html>

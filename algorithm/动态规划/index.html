@@ -1,64 +1,119 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"></head><body></body></html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body></body>
+</html>
 
 <script>
-    // 汉诺塔问题
-    function hanoi(n) {
-      function process(n, left, right, help) {
-        if(n === 0) return 0
-        const time1 = process(n - 1, left, help, right)
-        console.log(`第${n}层： 从${left}移动到${right}`)
-        const time2 = process(n - 1, help, right, left)
-        return time1 + time2 + 1
-      }
-      return process(3, 'left', 'right', 'help')
+  // 汉诺塔问题
+  function hanoi(n) {
+    function process(n, left, right, help) {
+      if (n === 0) return 0
+      const time1 = process(n - 1, left, help, right)
+      console.log(`第${n}层： 从${left}移动到${right}`)
+      const time2 = process(n - 1, help, right, left)
+      return time1 + time2 + 1
     }
 
-    function getStackBottom (stack) {
-      let node = stack.pop()
-      if (stack.isEmpty()) {
-        return node
+    return process(3, 'left', 'right', 'help')
+  }
+
+  function getStackBottom(stack) {
+    let node = stack.pop()
+    if (stack.isEmpty()) {
+      return node
+    }
+    const returnNode = getStackBottom(stack)
+    stack.push(node)
+    return returnNode
+  }
+
+  // 翻转栈
+  function revertStack(stack) {
+    if (stack.isEmpty()) {
+      return
+    }
+    let node = getStackBottom(stack)
+    revertStack(stack)
+    stack.push(node)
+  }
+
+  // 机器人问题，从数组一个位置移动到另外一个位置，必须要走target步数，每次可以往左右移动一步，但是在数组收尾位置只能向数组内部移动
+  // 求解：有多少种走法
+  function robotMove(nums, start, target, steps) {
+    const dp = Array(steps + 1).fill('').map(() => [])
+    dp[0] = Array(nums.length).fill(0).map((_, index) => index === target ? 1 : 0)
+    for (let i = 1; i <= steps; i++) {
+      for (let j = 0; j < nums.length; j++) {
+        if (target - j > i) {
+          dp[i][j] = 0
+          continue
+        }
+        if (j === 0) {
+          dp[i][j] = dp[i - 1][1]
+          continue
+        }
+        if (j === nums.length - 1) {
+          dp[i][j] = dp[i - 1][nums.length - 2]
+          continue
+        }
+        dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j + 1]
       }
-      const returnNode = getStackBottom(stack)
-      stack.push(node)
-      return returnNode
+    }
+    return dp[steps][start]
+  }
+
+  //  给定一个整形数组，代表数值不同的纸牌排成一条线，玩家A和玩家B依次拿走每张纸，规定玩家A先拿，玩家B后拿, 每个玩家只能拿走最左或者最右的纸牌，玩家A和玩家B都决定聪明，返回最后的胜者的分数
+  function cardsInLine(cardsInLine) {
+    const dpFirst = Array(cardsInLine.length).fill('').map(() => Array(cardsInLine.length).fill('null'))
+    const dpSecond = Array(cardsInLine.length).fill('').map(() => Array(cardsInLine.length).fill('null'))
+    for (let left = 0; left < cardsInLine.length; left++) {
+      dpFirst[left][left] = cardsInLine[left]
+      dpSecond[left][left] = 0
     }
 
-    // 翻转栈
-    function revertStack(stack) {
-      if (stack.isEmpty()) {
-        return
+    for (let rightStart = 1; rightStart < cardsInLine.length; rightStart++) {
+      let right = rightStart
+      let left = 0
+      while (right < cardsInLine.length) {
+        dpFirst[left][right] = Math.max(cardsInLine[left] + dpSecond[left + 1][right], cardsInLine[right] + dpSecond[left][right - 1])
+        dpSecond[left][right] = Math.min(dpFirst[left + 1][right], dpFirst[left][right - 1])
+        left++
+        right++
       }
-      let node = getStackBottom(stack)
-      revertStack(stack)
-      stack.push(node)
     }
 
-    // 机器人问题，从数组一个位置移动到另外一个位置，必须要走target步数，每次可以往左右移动一步，但是在数组收尾位置只能向数组内部移动
-    // 求解：有多少种走法
-    function robotMove(nums, start, target, steps) {
-      const dp = Array(steps + 1).fill('').map(() => [])
-      dp[0] = Array(nums.length).fill(0).map((_, index) => index === target ? 1 : 0)
-      for(let i = 1; i <= steps; i++) {
-        for(let j = 0; j < nums.length; j++) {
-          if (target - j > i) {
-            dp[i][j] = 0
-            continue
-          }
-          if (j === 0) {
-            dp[i][j] = dp[i -1][1]
-            continue
-          }
-          if (j === nums.length - 1) {
-            dp[i][j] = dp[i -1][nums.length - 2]
-            continue
-          }
-          dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j + 1]
+    return dpFirst[0][cardsInLine.length - 1]
+  }
+
+  // 背包问题，给定两个数组， 物品重量数组[] , 物品价值数组[], 给定一个背包最大容量K，在背包中放置最多价值的物品（重量不能超过K），物品只能选择一个，求获取的最大价值多少？
+  function maxPackage(weights, values, k) {
+    const dp = Array(weights.length + 1).fill('').map(() => [])
+    dp[weights.length] = Array(k + 1).fill(0)
+    for (let i = weights.length - 1; i >= 0; i--) {
+      for (let j = 0; j <= k; j++) {
+        if (j - weights[i] >= 0) {
+          dp[i][j] = Math.max(dp[i+1][j], dp[i+1][j - weights[i]] + values[i])
+        } else {
+          dp[i][j] = 0
         }
       }
-      return dp[steps][start]
     }
+    return dp[0][k]
+  }
 
-    console.log(robotMove([0, 1, 2, 3, 4, 5, 6, 7, 8], 1, 3, 4))
+  // 字符转换
+  // 规定1转换成A，2转换成B..., 26转换成Z。求一个任意str有多少转换结果（例如 ‘111’ 可以转换成'AAA', 'KA', 'AK'三种转换结果）
+  function strTrans(str) {
+    const dp = Array(str.length + 2).fill(0)
+    dp[str.length] = 1
+    dp[str.length + 1] = 0
+    for (let index = str.length - 1; index >=0; index--) {
+      dp[index] = dp[index + 1] + (+str.slice(index, index + 2) <= 26 ? dp[index + 2] : 0)
+    }
+    return dp[0]
+  }
 
 </script>

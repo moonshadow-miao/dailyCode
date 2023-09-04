@@ -466,7 +466,6 @@
     return process(head)
   };
 
-
   var sumNumbers = function(root) {
     function process(root, sum) {
       if(!root) {
@@ -591,13 +590,4 @@
     }
     return process(A, B)
   };
-  const rootA = generatorTree([4,2,3,4,5,6,7,8,9])
-  const rootB = generatorTree([4,8])
-  console.log(isSubStructure(rootA, rootB));
-
-  const a = ["()()()()","(()()())","()(()())","((()()))","(()())()","()()(())","(()(()))","()(())()","()((()))","(((())))","((()))()","((())())","(())()()"]
-  const b = ["(((())))","((()()))","((())())","((()))()","(()(()))","(()()())","(()())()","(())(())","(())()()","()((()))","()(()())","()(())()","()()(())","()()()()"]
-  console.log(b.filter(item => !a.includes(item)))
 </script>
-
-(())(())
