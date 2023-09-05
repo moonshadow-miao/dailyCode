@@ -132,3 +132,5 @@ class UnionFind<T = any> {
         }
     }
 }
+
+export default UnionFind

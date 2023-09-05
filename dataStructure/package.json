@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "build": "tsc unionFind.ts -watch",
+    "build": "tsc graph.ts -watch --target esnext",
     "test": "node promise.js"
   },
   "keywords": [

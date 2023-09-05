@@ -9,8 +9,7 @@
 </body>
 </html>
 <script>
-
-  var uniquePaths = function(m, n) {
+  var uniquePaths = function (m, n) {
     const dp = Array(m + 1).fill('').map(() => [])
     dp[0] = Array(n + 1).fill(0)
     for (let index = 0; index <= m; index++) {
@@ -19,17 +18,89 @@
     let i = 1
     let j = 1
     for (; i <= m; i++) {
-      for(j = 1; j <= n; j++) {
+      for (j = 1; j <= n; j++) {
         if (i === 1 || j === 1) {
           dp[i][j] = 1
         } else {
-          dp[i][j] = dp[i-1][j] + dp[i][j-1]
+          dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
         }
       }
     }
-    console.log(dp)
     return dp[m][n]
   };
 
-  console.log(uniquePaths(5, 5));
+</script>
+
+<script type="module">
+  import Graph from './graph.js'
+  import PriorityQueue from "./priorityQueue.js";
+
+  // const list = [[1, 2, 10], [2, 3, 5], [3, 4, 14], [5, 6, 7], [6, 7, 1], [8, 9, 11], [10, 8, 6], [10, 9, 3], [8, 5, 12], [9, 6, 8], [9, 7, 2], [5, 1, 13], [6, 2, 15], [7, 3, 4], [7, 4, 9]]
+  const list = [[1, 2, 10], [2, 3, 5], [3, 4, 14], [5, 1, 13]]
+
+  const graph = new Graph(true)
+
+  graph.init(list)
+
+  function topologySort(graph) {
+    const priorityQueue = new PriorityQueue((a, b) => a.in - b.in)
+    priorityQueue.init([...graph.nodes.values()])
+    const result = []
+    while (!priorityQueue.isEmpty()) {
+      const head = priorityQueue.offer()
+      const nodes = head.nexts
+      for (let node of nodes) {
+        if (!result.includes(node)) {
+          node.in--
+          priorityQueue.update(node)
+        }
+      }
+      result.push(head)
+    }
+    return result.map(node => node.value)
+  }
+
+  function prim(nodes) {
+    const visitedSet = new Set()
+    const result = []
+    const priorityQueue = new PriorityQueue((a, b) => a.weight - b.weight)
+
+    function addToQueue(node) {
+      for (let edge of node.edges) {
+        if (!priorityQueue.itemMap.has(edge)) {
+          priorityQueue.add(edge)
+        }
+      }
+    }
+
+    while (nodes.length) {
+      const node = nodes.shift()
+      if (visitedSet.has(node)) break
+      addToQueue(node)
+      while (!priorityQueue.isEmpty()) {
+        let edge = priorityQueue.offer()
+        let {from, to} = edge
+        if (!visitedSet.has(from) || !visitedSet.has(to)) {
+          result.push(edge)
+          if (!visitedSet.has(from)) {
+            addToQueue(from)
+            visitedSet.add(from)
+          }
+          if (!visitedSet.has(to)) {
+            addToQueue(to)
+            visitedSet.add(to)
+          }
+        }
+      }
+    }
+    return result
+  }
+
+  console.log([...graph.topologySort().entries()].sort((a, b) => b[1] - a[1]).map(item => item[0].value));
+  console.log(topologySort(graph))
+
+</script>
+
+<script>
+
 </script>
