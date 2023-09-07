@@ -36,11 +36,10 @@
   import PriorityQueue from "./priorityQueue.js";
 
   // const list = [[1, 2, 10], [2, 3, 5], [3, 4, 14], [5, 6, 7], [6, 7, 1], [8, 9, 11], [10, 8, 6], [10, 9, 3], [8, 5, 12], [9, 6, 8], [9, 7, 2], [5, 1, 13], [6, 2, 15], [7, 3, 4], [7, 4, 9]]
-  const list = [[1, 2, 10], [2, 3, 5], [3, 4, 14], [5, 1, 13]]
+  // const list = [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]]
 
   const graph = new Graph(true)
 
-  graph.init(list)
 
   function topologySort(graph) {
     const priorityQueue = new PriorityQueue((a, b) => a.in - b.in)
@@ -96,11 +95,427 @@
     return result
   }
 
-  console.log([...graph.topologySort().entries()].sort((a, b) => b[1] - a[1]).map(item => item[0].value));
-  console.log(topologySort(graph))
+  var findCheapestPrice = function (n, flights, src, dst, k) {
+    const graph = new Graph()
+    graph.init(flights)
+    const {nodes} = graph
+    const destNode = nodes.get(dst)
+    const nodeList = [...nodes.values()]
+    const dp = Array(nodes.size + 1).fill('').map(() => Array(k + 2).fill(''))
+    if (!nodes.has(src) || !nodes.has(dst)) return -1
+
+    function process(srcNode, step) {
+      const index = nodeList.indexOf(srcNode)
+      if (dp[index][step] !== '') {
+        return dp[index][step]
+      }
+      if (srcNode === destNode) return dp[index][step] = 0
+      if (step > k) return dp[index][step] = -1
+      const result = []
+      for (let {from, to, weight} of srcNode.edges) {
+        if (from === srcNode) {
+          const toIndex = nodeList.indexOf(to)
+          const res = dp[toIndex][step + 1] === '' ? process(to, step + 1) : dp[toIndex][step + 1]
+          dp[toIndex][step + 1] = res
+          res !== -1 && result.push(res + weight)
+        }
+      }
+      const res = result.length ? Math.min(...result) : -1
+      return dp[index][step] = res
+    }
+
+    return process(nodes.get(src), 0)
+  };
 
 </script>
+<script src="../algorithm/structure.js"></script>
 
 <script>
+  var RandomizedSet = function () {
+    this.dataList = []
+    this.existedMap = new Map()
+  };
 
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  RandomizedSet.prototype.insert = function (val) {
+    if (this.existedMap.has(val)) {
+      return false
+    }
+    this.dataList.push(val)
+    this.existedMap.set(val, this.dataList.length - 1)
+    return true
+  };
+
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  RandomizedSet.prototype.remove = function (val) {
+    if (!this.existedMap.has(val)) {
+      return false
+    }
+    const index = this.existedMap.get(val)
+    this.dataList[index] = this.dataList[this.dataList.length - 1]
+    this.dataList.pop()
+    this.existedMap.delete(val)
+    this.existedMap.set(this.dataList[index], index)
+    return true
+  };
+
+  /**
+   * @return {number}
+   */
+  RandomizedSet.prototype.getRandom = function () {
+    const randomIndex = Math.floor(Math.random() * this.dataList.length)
+    return this.dataList[randomIndex]
+  };
+
+
+  class PriorityQueueStrong {
+    compare;
+    heap = [];
+    itemMap = new Map();
+
+    constructor(compare) {
+      this.compare = compare;
+      if (typeof compare !== 'function') {
+        throw Error('compare must be a function');
+      }
+    }
+
+    add(item) {
+      this.heap.push(item);
+      this.itemMap.set(item, this.heap.length - 1);
+      this.heapInsert(this.heap.length - 1);
+    }
+
+    // 弹出堆顶项
+    offer() {
+      const removeItem = this.heap[0];
+      this.swap(0, this.heap.length - 1);
+      this.heap.pop();
+      this.itemMap.delete(removeItem);
+      this.heapFy();
+      return removeItem;
+    }
+
+    update(item) {
+      const updateIndex = this.itemMap.get(item);
+      if (updateIndex === undefined)
+        throw Error(`heap don't contain this item`);
+      this.heapFy(updateIndex);
+      this.heapInsert(updateIndex);
+    }
+
+    swap(index1, index2) {
+      if (index1 === index2)
+        return;
+      let temp = this.heap[index1];
+      this.heap[index1] = this.heap[index2];
+      this.heap[index2] = temp;
+      this.itemMap.set(this.heap[index1], index1);
+      this.itemMap.set(this.heap[index2], index2);
+    }
+
+    // 从某个位置向下调整堆
+    heapFy(index = 0) {
+      let leftChild = (index << 1) + 1;
+      while (leftChild < this.heap.length) {
+        let rightChild = leftChild + 1 < this.heap.length ? leftChild + 1 : this.heap.length - 1;
+        let compareChild = this.compare(this.heap[leftChild], this.heap[rightChild]) < 0 ? leftChild : rightChild;
+        let compareRes = this.compare(this.heap[index], this.heap[compareChild]);
+        if (compareRes > 0) {
+          this.swap(index, compareChild);
+          index = compareChild;
+          leftChild = (index << 1) + 1;
+        } else {
+          break;
+        }
+      }
+    }
+
+    // 从某个位置向上调整堆
+    heapInsert(index) {
+      if (index > this.heap.length - 1)
+        return;
+      while (index) {
+        let parent = (index - 1) >> 1;
+        let compareRes = this.compare(this.heap[parent], this.heap[index]);
+        if (compareRes > 0) {
+          this.swap(index, parent);
+          index = parent;
+        } else {
+          break;
+        }
+      }
+    }
+  }
+
+  var topKFrequent = function (nums, k) {
+    if (!nums.length) return []
+    const priorityQueue = new PriorityQueueStrong((a, b) => b.count - a.count)
+    const map = new Map()
+    for (let index = 0; index < nums.length; index++) {
+      if (!map.has(nums[index])) {
+        const item = {val: nums[index], count: 1}
+        priorityQueue.add(item)
+        map.set(nums[index], item)
+      } else {
+        const item = map.get(nums[index])
+        item.count++
+        priorityQueue.update(item)
+      }
+    }
+    const result = []
+    while (k) {
+      result.push(priorityQueue.offer())
+      k--
+    }
+    return result.map(item => item.val)
+  };
+
+  var sortList = function (head) {
+    function merge(link1, link2) {
+      if (!link1 || !link2) return link1 || link2
+      let newHead, head
+      while (link1 && link2) {
+        if (link1.val < link2.val) {
+          head ? (head = head.next = link1) : (newHead = head = link1)
+          link1 = link1.next
+        } else {
+          head ? (head = head.next = link2) : (newHead = head = link2)
+          link2 = link2.next
+        }
+      }
+      if (link1) {
+        head.next = link1
+      }
+      if (link2) {
+        head.next = link2
+      }
+      return newHead
+    }
+
+    function splitLink(head) {
+      let fast = head
+      let slow = head
+      while (fast && fast.next) {
+        slow = slow.next
+        fast = fast.next.next
+      }
+      const right = slow.next
+      slow.next = null
+      return [head, right]
+    }
+
+    function process(head) {
+      if (!head || !head.next) return head
+      if (!head.next.next) {
+        if (head.val > head.next.val) {
+          const newHead = head.next
+          head.next.next = head
+          head.next = null
+          return newHead
+        }
+        return head
+      }
+      const [leftH, rightH] = splitLink(head)
+      const sortLeft = process(leftH)
+      const sortRight = process(rightH)
+      return merge(sortLeft, sortRight)
+    }
+
+    return process(head)
+  }
+
+  var reverseWords = function (s) {
+    let start = s.length - 1
+    let end = s.length - 1
+    let newWords = ''
+
+    while (start >= 0) {
+      if (s[start] !== ' ') {
+        start--
+      } else {
+        start !== end && (newWords = newWords + s.slice(start + 1, end + 1) + ' ')
+        start = end = start - 1
+      }
+    }
+    start !== end && (newWords = newWords + s.slice(start + 1, end + 1))
+    return newWords.trim()
+  };
+
+  class PrefixNode {
+    constructor() {
+      this.end = this.path = 0;
+      this.next = [];
+    }
+  }
+
+  class PrefixTree {
+    constructor(strList) {
+      this.root = new PrefixNode();
+      strList.forEach(this.add);
+    }
+
+    endWith(str) {
+      const node = this._search(str);
+      return node && node.end;
+    }
+
+    add = (str) => {
+      if (!str)
+        return;
+      let node = this.root;
+      let index = 0;
+      while (index < str.length) {
+        node.path++;
+        const path = this._getPath(str[index]);
+        !node.next[path] && (node.next[path] = new PrefixNode());
+        node = node.next[path];
+        index++;
+      }
+      node.end++;
+      node.path++;
+    }
+
+    _getPath = (str) => str.charCodeAt(0) - 'A'.charCodeAt(0);
+    _search = (str) => {
+      let index = 0;
+      let node = this.root;
+      while (index < str.length) {
+        if (!node)
+          return null;
+        node = node.next[this._getPath(str[index])];
+        index++;
+      }
+      return node;
+    };
+  }
+
+  var wordBreak = function (s, wordDict) {
+    const prefixTree = new PrefixTree(wordDict)
+    const dp = Array(s.length + 1).fill(false)
+    dp[s.length] = true
+
+    for (let index = s.length - 1; index >= 0; index--) {
+      let res = false
+      let wordIndex = index + 1
+      while (wordIndex <= s.length) {
+        if (prefixTree.endWith(s.slice(index, wordIndex))) {
+          res = res || dp[wordIndex]
+        }
+        if (res) break
+        wordIndex++
+      }
+      dp[index] = res
+    }
+    return dp[0]
+  };
+
+  let prev = null
+
+  function process(root) {
+    if (!root) return
+    process(root.left)
+    if (prev && prev.val == 1) {
+      debugger
+    }
+    prev = root
+    process(root.right)
+  }
+
+
+  var inorderSuccessor = function (root, p) {
+    if (!p) return null
+    if (p.right) {
+      p = p.right
+      while (p.left) {
+        p = p.left
+      }
+      return p
+    }
+    let prev = null
+    let res = null
+
+    function process(root) {
+      if (!root || res) return
+      process(root.left)
+      if (prev === p) {
+        res = root
+        prev = null
+        return
+      }
+      prev = root
+      process(root.right)
+    }
+
+    process(root)
+    return res
+  };
+</script>
+<script>
+  var MyCircularQueue = function (k) {
+    this.maxLength = k
+    this.length = 0
+    this.first = null
+    this.last = null
+  };
+  MyCircularQueue.prototype.enQueue = function (value) {
+    if (this.length === this.maxLength) return false
+    this.length++
+    if (!this.first) {
+      this.last = this.first = {val: value}
+    } else {
+      this.last.next = {val: value}
+      this.last = this.last.next
+    }
+    this.last.next = this.first
+    return true
+  };
+
+  MyCircularQueue.prototype.deQueue = function () {
+    if (this.length === 0) return false
+    this.length--
+    this.first = this.first.next
+    this.length === 0 && (this.first = this.last = null)
+    return true
+  };
+
+  MyCircularQueue.prototype.Front = function () {
+    if (this.length === 0) return -1
+    return this.first.val
+  };
+
+  MyCircularQueue.prototype.Rear = function () {
+    if (this.length === 0) return -1
+    return this.last.val
+  };
+
+  MyCircularQueue.prototype.isEmpty = function () {
+    return this.length === 0
+  };
+
+  MyCircularQueue.prototype.isFull = function () {
+    return this.length === this.maxLength
+  };
+
+  function operate(dicList, paramList) {
+    let q
+    for (let index = 0; index < paramList.length; index++) {
+      const dic = dicList[index]
+      if (dic === 'MyCircularQueue') {
+        q = new MyCircularQueue(...paramList[index])
+      } else {
+        console.log(q[dic](...paramList[index]))
+      }
+    }
+  }
+  operate(
+    ["MyCircularQueue", "enQueue", "enQueue", "deQueue", "deQueue", "enQueue", "isEmpty", "Rear", "deQueue"],
+    [[2], [3], [9], [], [], [1], [], [], []]
+  )
 </script>

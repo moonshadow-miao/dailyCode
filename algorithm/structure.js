@@ -1,6 +1,6 @@
 class TreeNode {
   constructor(value) {
-    this.value = value
+    this.val = value
     this.left = null
     this.right = null
   }
@@ -8,7 +8,7 @@ class TreeNode {
 
 class MultiTreeNode {
   constructor(val, list = []) {
-    this.value = val
+    this.val = val
     this.children = list // list: MultiTreeNode[]
   }
 }
