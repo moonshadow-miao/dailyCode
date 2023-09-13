@@ -95,7 +95,7 @@
     for (let i = weights.length - 1; i >= 0; i--) {
       for (let j = 0; j <= k; j++) {
         if (j - weights[i] >= 0) {
-          dp[i][j] = Math.max(dp[i+1][j], dp[i+1][j - weights[i]] + values[i])
+          dp[i][j] = Math.max(dp[i + 1][j], dp[i + 1][j - weights[i]] + values[i])
         } else {
           dp[i][j] = 0
         }
@@ -110,10 +110,78 @@
     const dp = Array(str.length + 2).fill(0)
     dp[str.length] = 1
     dp[str.length + 1] = 0
-    for (let index = str.length - 1; index >=0; index--) {
+    for (let index = str.length - 1; index >= 0; index--) {
       dp[index] = dp[index + 1] + (+str.slice(index, index + 2) <= 26 ? dp[index + 2] : 0)
     }
     return dp[0]
   }
 
+  // 贴纸问题： 给定一个目标字符串，给定一个字符串贴纸数组，数组中的字符串可以任意剪短，可以任意使用多次，返回需要多少张贴纸拼接成目标字符串，
+  // 例： target='ababc'  strList=['ab', 'c', 'abcd'] => 2 . 结果是使用 'abcd' 两张 就可以完成拼接
+  function sticker(target, strList) {
+
+  }
+
+  console.log(sticker())
+
+  // 最长公共子序列  两个字符串中 最长的子序列， 例： 'abcdef' 和 'bacdfef'  => acdef
+  function getMaxCommonSeq(strA, strB) {
+    const dp = Array(strA.length).fill('').map(() => Array(strB.length).fill(''))
+    for (let endA = 0; endA < strA.length; endA++) {
+      dp[endA][0] = strA[endA] === strB[0] ? strB[0] : ''
+    }
+    for (let endB = 0; endB < strB.length; endB++) {
+      dp[0][endB] = strB[endB] === strA[0] ? strA[0] : ''
+    }
+
+    for (let endA = 1; endA < strA.length; endA++) {
+      for (let endB = 1; endB < strB.length; endB++) {
+        const p1 = dp[endA - 1][endB - 1]
+        const p2 = dp[endA - 1][endB]
+        const max1 = p1.length > p2.length ? p1 : p2
+        const p3 = dp[endA][endB - 1]
+        const p4 = strA[endA] === strB[endB] ? p1 + strB[endB] : ''
+        const max2 = p3.length > p4.length ? p3 : p4
+        dp[endA][endB] = max1.length > max2.length ? max1 : max2
+      }
+    }
+    return dp[strA.length - 1][strB.length - 1]
+  }
+
+  // 求一个字符串，最大回文子序列长度  例： 'a1235342b1' => '1235321'
+  // 用最长公共子序列求解
+  function getMaxPalindromeSeqA(str) {
+    const reverseStr = str.split('').reverse().join('')
+    return getMaxCommonSeq(str, reverseStr)
+  }
+
+  function getMaxPalindromeSeq(str) {
+    // return process(0, str.length - 1)
+    const length = str.length
+    const dp = Array(length).fill('').map(() => Array(length).fill(null))
+    for (let left = 0; left < length; left++) {
+      dp[left][left] = str[left]
+      left + 1 < length && (dp[left][left + 1] = str[left] === str[left + 1] ? str[left] + str[left] : '')
+    }
+    for (let start = length - 3; start >= 0; start--) {
+      for (let left = start, right = length - 1; right >= 0 && left >= 0; right--, left--) {
+        const p1 = dp[left + 1][right - 1]
+        const p2 = dp[left][right - 1]
+        const max1 = p1.length > p2.length ? p1 : p2
+        const p3 = dp[left + 1][right]
+        const p4 = str[left] === str[right] ? str[left] + p1 + str[left] : ''
+        const max2 = p3.length > p4.length ? p3 : p4
+        dp[left][right] = max1.length > max2.length ? max1 : max2
+      }
+    }
+    return dp[0][length - 1]
+  }
+
+  // 咖啡机
+  // 给定一个数组arr， arr[i]代表第i个咖啡机泡一杯咖啡的时间
+  // 给定一个整数N，表示N个人咖啡机泡咖啡，每台咖啡机只能轮流泡咖啡
+  // 只有一台洗杯子机，一次只能洗干净一个杯子，时间消耗a，洗完才能洗下一个，每个杯子可以自然恢复干净，时间消耗b，自然恢复可以并行
+  // 求 开始到所有人喝完咖啡，且杯子变干净的最短时间
+
 </script>
+

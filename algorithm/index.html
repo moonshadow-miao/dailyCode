@@ -68,10 +68,11 @@
     return leftHead || rightHead
   }
 
-  var reverseBetween = function(head, left, right) {
+  var reverseBetween = function (head, left, right) {
     let newHead = head
     let last = null
     let index = 1
+
     function reverseLink(head) {
       let pre = null
       let next = null
@@ -165,11 +166,11 @@
     return new Trie()
   }
 
-  var findDuplicate = function(nums) {
+  var findDuplicate = function (nums) {
     let fast = 0
     let slow = 0
     while (true) {
-      fast+= 2
+      fast += 2
       slow++
       fast = fast < nums.length ? fast : (fast % nums.length)
       slow = slow < nums.length ? slow : (slow % nums.length)
@@ -185,7 +186,34 @@
     return nums[slow]
   };
 
-  console.log(findDuplicate([1,3,4,2,2]));
+  console.log(findDuplicate([1, 3, 4, 2, 2]));
 </script>
 </body>
 </html>
+<script>
+  var connect = function (root) {
+    function process(root) {
+      if (!root) return
+      process(root.left)
+      process(root.right)
+      root.left && root.right && (root.left.next = root.right)
+      connectChild(root.left, root.right)
+    }
+
+    function connectChild(left, right) {
+      if (!left || !right) return
+      const mostR = left.right || left.left
+      const mostL = right.left || left.right
+      if(!mostR) return
+      mostR.next = mostL
+      connectChild(mostR, mostL)
+    }
+
+    process(root)
+    return root
+  };
+
+  const root = generatorTree([1,2,3,4,5,6, null,7,null,null,null,null,8])
+
+  console.log(connect(root));
+</script>
