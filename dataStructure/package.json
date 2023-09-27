@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "build": "tsc prefixTree.ts -watch --target esnext",
+    "build": "tsc priorityQueue.ts -watch --target esnext",
     "test": "node promise.js"
   },
   "keywords": [

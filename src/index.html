@@ -5,12 +5,127 @@
     <title>Title</title>
 </head>
 <body>
-<script type="module">
+<script>
+  var findDiagonalOrder = function (mat) {
+    const res = []
+    const xLength = mat[0].length
+    const yLength = mat.length
+    let flag = false
+    let xStart = 0
+    let yStart = 0
+    while (xStart !== xLength - 1 || yStart !== yLength - 1) {
+      let x = xStart
+      let y = yStart
+      const list = []
+      while (x >= 0 && y < yLength) {
+        flag ? list.push(mat[y][x]) : list.unshift(mat[y][x])
+        x--
+        y++
+      }
+      res.push(...list)
+      flag = !flag
+      if (xStart === xLength - 1) {
+        yStart++
+      }
+      if (xStart < xLength - 1) {
+        xStart++
+      }
+    }
+    res.push(mat[yLength - 1][xLength - 1])
+    return res
+  };
 
-  import a, {count} from './moduleA.mjs'
-  console.log(a)
-  count()
-  console.log(a)
+  var change = function (amount, coins) {
+    function process(index, rest) {
+      if (rest === 0) {
+        return 1
+      }
+      if (index === coins.length) {
+        return 0
+      }
+      let sum = 0
+      const coin = coins[index]
+      for (let i = 0; coin * i <= rest; i++) {
+        sum += process(index + 1, rest - coin * i)
+      }
+      return sum
+    }
+
+    return process(0, amount)
+  };
+
+  var topKFrequent = function (words, k) {
+    const map = words.reduce((pre, cur) => {
+      pre[cur] ? pre[cur]++ : (pre[cur] = 1)
+      return pre
+    }, {})
+    return Object.keys(map).map(key => ({
+      key,
+      count: map[key]
+    })).sort((a, b) => b.count === a.count ? a.key.localeCompare(b.key) : b.count - a.count).slice(0, k).map(item => item.key)
+  };
+
+  var countSubstrings = function (s) {
+    function process(left, right) {
+      if (left === right) return {count: 1, isP: true}
+      if (right - left === 1) return s[left] === s[right] ? {count: 3, isP: true} : {count: 2, isP: false}
+      const p1 = process(left + 1, right - 1)
+      const p2 = p1.isP && s[left] === s[right] ? {count: 3, isP: true} : {count: 2, isP: false}
+      return {count: p1.count + p2.count, isP: p2.isP}
+    }
+
+    return process(0, s.length - 1).count
+  };
+
+  var MyCalendar = function () {
+    this.list = []
+  };
+
+  /**
+   * @param {number} start
+   * @param {number} end
+   * @return {boolean}
+   */
+  MyCalendar.prototype.book = function (start, end) {
+    if (!this.list.length) {
+      this.list.push([start, end])
+      return true
+    }
+    if (start <= this.list[0][0]) {
+      if (end <= this.list[0][0]) {
+        this.list.unshift([start, end])
+        return true
+      }
+      return false
+    }
+    if (start >= this.list[this.list.length - 1][0]) {
+      if (start >= this.list[this.list.length - 1][1]) {
+        this.list.push([start, end])
+        return true
+      }
+      return false
+    }
+    let left = 0
+    let right = this.list.length - 1
+    while (left < right) {
+      const mid = (left + right) >> 1
+      if (this.list[mid + 1][0] >= start && this.list[mid][0] <= start) {
+        if (start >= this.list[mid][1] && end <= this.list[mid + 1][0]) {
+          this.list.splice(mid + 1, 0, [start, end])
+          return true
+        }
+        return false
+      }
+      if (this.list[mid][0] > start) {
+        right = mid
+        continue
+      }
+      if (this.list[mid][0] < start) {
+        left = mid
+      }
+    }
+  };
+
 </script>
 </body>
 </html>

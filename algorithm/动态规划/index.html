@@ -177,11 +177,82 @@
     return dp[0][length - 1]
   }
 
+  function NQueen(n) {
+    function isValid(row, col, select) {
+      let index = 0
+      while (index < select.length) {
+        const [sRow, sCol] = select[index]
+        if (sCol === col || (Math.abs(row - sRow) === Math.abs(col - sCol))) {
+          return false
+        }
+        index++
+      }
+      return true
+    }
+
+    function process(row, select) {
+      if (row === n) {
+        return 1
+      }
+      let res = 0
+      for (let col = 0; col < n; col++) {
+        if (isValid(row, col, select)) {
+          res += process(row + 1, [...select, [row, col]])
+        }
+      }
+      return res
+    }
+
+    return process(0, [])
+  }
+
+</script>
+<script type="module">
+  import PriorityQueue from '../../dataStructure/priorityQueue.js'
   // 咖啡机
   // 给定一个数组arr， arr[i]代表第i个咖啡机泡一杯咖啡的时间
   // 给定一个整数N，表示N个人咖啡机泡咖啡，每台咖啡机只能轮流泡咖啡
   // 只有一台洗杯子机，一次只能洗干净一个杯子，时间消耗a，洗完才能洗下一个，每个杯子可以自然恢复干净，时间消耗b，自然恢复可以并行
   // 求 开始到所有人喝完咖啡，且杯子变干净的最短时间
+  function coffeeMachine(machines, n, a, b) {
+    const priorityQueue = new PriorityQueue((a, b) => (a.spendTime + a.endTime) - (b.spendTime + b.endTime))
+    const completeList = []
+    priorityQueue.init(machines.map(item => ({spendTime: item, endTime: 0})))
+    let index = 0
+    while (index < n) {
+      const item = priorityQueue.offer()
+      item.endTime = item.spendTime + item.endTime
+      completeList.push({...item})
+      priorityQueue.add(item)
+      index++
+    }
+
+    function washSpend(index, allowWashTime) {
+      if (index === completeList.length) {
+        return 0
+      }
+      const endTime = completeList[index].endTime
+      const newWashTime = Math.max(allowWashTime, endTime)
+      const p1 = Math.max(washSpend(index + 1, newWashTime + a), newWashTime + a)
+      const p2 = Math.max(washSpend(index + 1, allowWashTime), endTime + b)
+      return Math.min(p1, p2)
+    }
+
+    const maxWashTime = completeList.reduce((pre, cur) => Math.max(pre, cur.endTime) + a, 0)
+    const dp = Array(n + 1).fill('').map(() => Array(maxWashTime + 1).fill(0))
+
+    for (let index = n - 1; index >= 0; index--) {
+      for (let time = 0; time <= maxWashTime; time++) {
+        const endTime = completeList[index].endTime
+        const newWashTime = Math.max(time, endTime)
+        const p1 = Math.max(dp[index + 1][newWashTime + a] || 0, newWashTime + a)
+        const p2 = Math.max(dp[index + 1][time], endTime + b)
+        dp[index][time] = Math.min(p1, p2)
+      }
+    }
+
+    return dp[0][0]
+  }
 
 </script>
 

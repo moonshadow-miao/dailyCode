@@ -53,7 +53,7 @@ class PriorityQueue<T extends object> {
     // 查看堆顶项
     peek(): T {
         if (!this.heap.length) return null
-        return this.heap[this.heap.length - 1]
+        return this.heap[0]
     }
 
     isEmpty() {

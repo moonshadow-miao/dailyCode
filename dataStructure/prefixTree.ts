@@ -1,7 +1,7 @@
-class TreeNode {
+class PrefixTreeNode {
     path: number
     end: number
-    next: TreeNode[]
+    next: PrefixTreeNode[]
 
     constructor() {
         this.end = this.path = 0
@@ -10,10 +10,10 @@ class TreeNode {
 }
 
 class PrefixTree {
-    root: TreeNode
+    root: PrefixTreeNode
 
     constructor(strList: string[]) {
-        this.root = new TreeNode()
+        this.root = new PrefixTreeNode()
         strList.forEach(this.add)
     }
 
@@ -52,7 +52,7 @@ class PrefixTree {
         while (index < str.length) {
             node.path++
             const path = this._getPath(str[index])
-            !node.next[path] && (node.next[path] = new TreeNode())
+            !node.next[path] && (node.next[path] = new PrefixTreeNode())
             node = node.next[path]
             index++
         }
