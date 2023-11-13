@@ -255,4 +255,26 @@
   }
 
 </script>
+<script>
+  var coinChange = function (coins, amount) {
+    const dp = Array(coins.length + 1).fill('').map(() => [])
+    dp[coins.length] = Array(amount + 1).fill(Number.MAX_VALUE)
+    dp[coins.length][0] = 0
+    for (let index = coins.length - 1; index >= 0; index--) {
+      dp[index][0] = 0
+      for (let rest = 1; rest <= amount; rest++) {
+        let value = coins[index]
+        if (rest - value >= 0) {
+          dp[index][rest] = Math.min(dp[index][rest - value] + 1, dp[index + 1][rest])
+        } else {
+          dp[index][rest] = dp[index + 1][rest]
+        }
+      }
+    }
+    const res = dp[0][amount]
+
+    return res === Number.MAX_VALUE ? -1 : res
+  };
+  console.log(coinChange([1,2,5], 11));
+</script>
 

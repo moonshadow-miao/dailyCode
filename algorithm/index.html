@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
-<body>
+
 <script src="./structure.js"></script>
 <script>
 
@@ -187,7 +187,7 @@
   };
 
 </script>
-</body>
+
 </html>
 
 <script>
@@ -219,14 +219,12 @@
     compare;
     heap = [];
     itemMap = new Map();
-
     constructor(compare) {
       this.compare = compare;
       if (typeof compare !== 'function') {
         throw Error('compare must be a function');
       }
     }
-
     // 弹出堆顶项
     offer() {
       const removeItem = this.heap[0];
@@ -236,7 +234,6 @@
       this.heapFy();
       return removeItem;
     }
-
     init(arr) {
       if (this.heap.length) {
         throw Error('heap has init');
@@ -249,13 +246,11 @@
         this.heapFy(i);
       }
     }
-
     add(item) {
       this.heap.push(item);
       this.itemMap.set(item, this.heap.length - 1);
       this.heapInsert(this.heap.length - 1);
     }
-
     // 删除某一项
     remove(item) {
       const removeIndex = this.itemMap.get(item);
@@ -269,18 +264,15 @@
       this.heapInsert(removeIndex);
       return removeItem;
     }
-
     // 查看堆顶项
     peek() {
       if (!this.heap.length)
         return null;
       return this.heap[0];
     }
-
     isEmpty() {
       return this.heap.length === 0;
     }
-
     update(item) {
       const updateIndex = this.itemMap.get(item);
       if (updateIndex === undefined)
@@ -288,12 +280,10 @@
       this.heapFy(updateIndex);
       this.heapInsert(updateIndex);
     }
-
     clear() {
       this.heap = [];
       this.itemMap.clear();
     }
-
     swap(index1, index2) {
       if (index1 === index2)
         return;
@@ -303,7 +293,6 @@
       this.itemMap.set(this.heap[index1], index1);
       this.itemMap.set(this.heap[index2], index2);
     }
-
     // 从某个位置向下调整堆
     heapFy(index = 0) {
       let leftChild = (index << 1) + 1;
@@ -315,12 +304,12 @@
           this.swap(index, compareChild);
           index = compareChild;
           leftChild = (index << 1) + 1;
-        } else {
+        }
+        else {
           break;
         }
       }
     }
-
     // 从某个位置向上调整堆
     heapInsert(index) {
       if (index > this.heap.length - 1)
@@ -331,7 +320,8 @@
         if (compareRes > 0) {
           this.swap(index, parent);
           index = parent;
-        } else {
+        }
+        else {
           break;
         }
       }
@@ -510,4 +500,228 @@
     return dp[0][0]
   };
 
+  const insertIntoBST = (root, val) => {
+    const process = (root) => {
+      if (!root) {
+        return new TreeNode(val)
+      }
+      if (root.val < val) {
+        root.right = process(root.right)
+      }
+      if (root.val > val) {
+        root.left = process(root.left)
+      }
+      return root
+    }
+    return process(root)
+  };
+
+
+  var bstToGst = function (root) {
+    const list = []
+
+    function search(root) {
+      if (!root) {
+        return
+      }
+      search(root.right)
+      list.push(root.val)
+      search(root.left)
+    }
+
+    search(root)
+    console.log(list)
+  };
+
+  var rob = function (root) {
+    if (!root) return 0
+    const list = []
+    const queue = [root]
+    while (queue.length) {
+      const root = queue.shift()
+      list.push(root)
+      if (root) {
+        queue.push(root.left || null)
+        queue.push(root.right || null)
+      }
+    }
+    console.log(list)
+    const dp = [Array(list.length).fill(0), Array(list.length).fill(0)]
+    for (let index = list.length - 1; index >= 0; index--) {
+      if (list[index]) {
+        const left = 2 * index + 1
+        const right = 2 * index + 2
+        dp[1][index] = (dp[0][left] || 0) + (dp[0][right] || 0)
+        dp[0][index] = Math.max((dp[1][left] || 0) + list[index].val + (dp[1][right] || 0), (dp[0][left] || 0) + (dp[0][right] || 0))
+      }
+    }
+    return dp[0][0]
+  };
+
+  var findTargetSumWays = function (nums, target) {
+    const max = nums.reduce((pre, cur) => pre + Math.abs(cur), 0)
+    const min = nums.reduce((pre, cur) => pre - Math.abs(cur), 0)
+    const dp = Array(nums.length + 1).fill('').map(() => Array(max - min + 1).fill(0))
+    const maxTar = max - min
+    dp[nums.length][-min] = 1
+    for (let index = nums.length - 1; index >= 0; index--) {
+      for (let tar = maxTar; tar >= 0; tar--) {
+        const val = nums[index]
+        dp[index][tar] = (dp[index + 1][tar + val] || 0) + (dp[index + 1][tar - val] || 0)
+      }
+    }
+    return dp[0][target - min] || 0
+  };
+
+  var findTargetSumWays1 = function (nums, target) {
+    const max = nums.reduce((pre, cur) => pre + Math.abs(cur), 0)
+    const min = nums.reduce((pre, cur) => pre - Math.abs(cur), 0)
+    const dp = Array(nums.length + 1).fill('').map(() => Array(max - min + 1).fill(0))
+    dp[nums.length][0] = 1
+    for (let index = nums.length - 1; index >= 0; index--) {
+      for (let tar = max; tar >= min; tar--) {
+        const val = nums[index]
+        dp[index][tar] = (dp[index + 1][tar + val] || 0) + (dp[index + 1][tar - val] || 0)
+      }
+    }
+    return dp[0][target] || 0
+  };
+
+  class UnionFind {
+    size = [];
+    parent = [];
+    elements;
+    data;
+    setsNum = 0;
+    constructor(data) {
+      this.size = Array(data.length).fill(1);
+      this.parent = data.map((_, index) => index);
+      this.elements = new Map();
+      data.forEach((item, index) => this.elements.set(item, index));
+      this.data = data;
+      this.setsNum = data.length;
+    }
+    findHead(index) {
+      const list = [];
+      while (index !== this.parent[index]) {
+        list.push(index);
+        index = this.parent[index];
+      }
+      while (list.length) {
+        this.parent[list.pop()] = index;
+      }
+      return index;
+    }
+    isSameSet(item1, item2) {
+      const index1 = this.elements.get(item1);
+      const index2 = this.elements.get(item2);
+      return this.findHead(index1) === this.findHead(index2);
+    }
+    union(item1, item2) {
+      const index1 = this.elements.get(item1);
+      const index2 = this.elements.get(item2);
+      if (index1 === undefined || index2 === undefined) {
+        return;
+      }
+      const head1 = this.findHead(index1);
+      const head2 = this.findHead(index2);
+      if (head1 === head2) {
+        return;
+      }
+      const bigger = this.size[head1] > this.size[head2] ? head1 : head2;
+      const smaller = this.size[head1] > this.size[head2] ? head2 : head1;
+      this.parent[smaller] = bigger;
+      this.size[bigger] = this.size[head1] + this.size[head2];
+      this.size[smaller] = 0;
+      this.setsNum--;
+    }
+    // 查找所在集合的代表元素
+    find(item) {
+      return this.data[this.findHead(this.elements.get(item))];
+    }
+    add(item) {
+      if (!this.elements.get(item)) {
+        this.data.push(item);
+        this.parent.push(this.data.length - 1);
+        this.size.push(1);
+        this.elements.set(item, this.data.length - 1);
+        this.setsNum++;
+      }
+    }
+  }
+  var smallestEquivalentString = function(s1, s2, baseStr) {
+    const setList = s1.split('').map((item, index) => [item, s2[index]])
+    const strList = s1.split('').concat(s2.split(''))
+    const uf = new UnionFind([...new Set(strList)])
+    setList.forEach(([a, b]) => {
+      uf.union(a, b)
+    })
+    const pMap = {}
+    uf.data.forEach(str => {
+      const p = uf.findHead(uf.elements.get(str))
+      if (!pMap[p]) {
+        pMap[p] = {
+          items: [str],
+          smallest: str
+        }
+      } else {
+        pMap[p].items.push(str)
+        pMap[p].smallest = pMap[p].smallest.localeCompare(str) > 0 ? str : pMap[p].smallest
+      }
+    })
+    const map = {}
+    Object.values(pMap).forEach(item => {
+      item.items.forEach(str => {
+        map[str] = item.smallest
+      })
+    })
+    console.log(uf)
+    return baseStr.split('').map(str => map[str] || str).join('')
+  };
+
+  var MyLinkedList = function () {
+    this.map = new Map()
+    this.adjustIndex = function (index, newItem) {
+      let nIndex = index + 1
+      const size = this.map.size
+      while (nIndex <= size) {
+        const lastPoi = this.map.get(nIndex - 1)
+        this.map.set(nIndex, lastPoi)
+        nIndex++
+      }
+      this.map.set(index, newItem)
+    }
+  };
+
+  var findFrequentTreeSum = function(root) {
+    const sumMap = {}
+    let res = []
+    function process(root) {
+      if (!root) {
+        return 0
+      }
+      const leftSum = process(root.left)
+      const rightSum = process(root.right)
+      const sum = leftSum + rightSum + root.val
+      sumMap[sum] ? sumMap[sum]++ : (sumMap[sum] = 1)
+      return sum
+    }
+    process(root)
+    const values = Object.entries(sumMap)
+    let max = Number.MIN_VALUE
+    for (let index = 0; index < values.length; index++) {
+      if (max < values[index][1]) {
+        res = []
+        res.push(+values[index][0])
+        max = values[index][1]
+        continue
+      }
+      if (max === values[index][1]) {
+        res.push(+values[index][0])
+      }
+    }
+    return res
+  };
+
+  console.log(findFrequentTreeSum(generatorTree([5, 2, -3])));
 </script>

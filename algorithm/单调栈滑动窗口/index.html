@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
+
+<script>
+  //  窗口最大值更新结构 双端队列保存窗口最大值/最小值的索引，窗口滑动时，数值等于队列右侧，更新索引
+  function slideWindow(arr) {
+    const window = []
+    let index = 0
+    while (index < arr.length) {
+      if (window.length) {
+        while (arr[window[window.length - 1]] <= arr[index]) {
+          window.pop()
+        }
+      }
+      window.push(index)
+      index++
+    }
+  }
+
+
+  // 规定一个窗口大小为n，给定一个数组，求窗口内的最大值数组
+  // 例： [2, 6, 8, 4, 3, 5, 9] 窗口大小3，=> [8, 8, 8, 5, 9]
+  function getWindowMax(arr, windowSize) {
+    const window = []
+    const res = []
+    let index = 0
+    while (index < arr.length) {
+      if (window.length) {
+        while (arr[window[window.length - 1]] <= arr[index]) {
+          window.pop()
+        }
+        if (index - window[0] === windowSize) {
+          window.shift()
+        }
+      }
+      window.push(index)
+      index >= windowSize - 1 && res.push(arr[window[0]])
+      index++
+    }
+    return res
+  }
+
+  console.log(getWindowMax([1, 5, 3, 8, 4, 3, 5, 5, 9], 3))
+
+  // 给定一个整形数组arr，和一个整数num。返回arr中达标的子数组数量（达标子数组： 子数组中最大值 - 最小值 <= num）
+  function getReachStandardNum(arr, num) {
+
+  }
+
+  console.log(getReachStandardNum([1, 7, 2, 5, 3, 2, 4, 3], 3))
+
+
+</script>
